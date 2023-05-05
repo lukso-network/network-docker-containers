@@ -1,0 +1,3 @@
+[submodule "network-configs"]
+	path = network-configs
+	url = git@github.com:lukso-network/network-configs.git
