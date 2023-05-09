@@ -8,8 +8,10 @@ LUKSO network configs are fetched from: [lukso-network/network-configs](https://
 
 ```sh
 git submodule update --recursive
-docker compose up
+docker compose --env-file .env.tesnet up
 ```
+
+If you have database related issues (`database contains incompatible genesis`), delete the `./data` folder.
 
 ## Images
 
