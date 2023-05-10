@@ -42,7 +42,8 @@ services:
       --authrpc.jwtsecret /configs/jwt.hex
       --miner.gaslimit 42000000
       --miner.gasprice 1000000000
-     # --nat extip:$EXTERNAL_IP
+      --nat extip:$EXTERNAL_IP
+      --bootnodes $GETH_BOOTSTRAP_NODE
      # --ethstats "${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
     network_mode: host
 
@@ -77,6 +78,7 @@ services:
       --minimum-peers-per-subnet 0
       --block-batch-limit 512
       --block-batch-limit-burst-factor 10
+      --bootstrap-node $PRYSM_BOOTSTRAP_NODE
      # --contract-deployment-block {{ contract_deployment_block }}
     network_mode: host
   
