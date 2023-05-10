@@ -60,12 +60,12 @@ services:
     stop_grace_period: 2m
     command: >
       --accept-terms-of-use
-      --genesis-state /configs/shared/genesis.ssz
-      --datadir /consensus_data
+      --genesis-state=/configs/shared/genesis.ssz
+      --datadir=/consensus_data
       --execution-endpoint=http://localhost:8551
       --jwt-secret=/configs/jwt.hex
       --min-sync-peers=0
-      --p2p-host-ip $EXTERNAL_IP
+      --p2p-host-ip=$EXTERNAL_IP
       --chain-config-file=/configs/shared/config.yaml
       --monitoring-host 0.0.0.0
       --grpc-gateway-host 0.0.0.0
