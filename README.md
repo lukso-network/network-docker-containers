@@ -15,7 +15,7 @@ For more information, check the [LUKSO Docs](https://docs.lukso.tech/networks/ma
 
 ## How to use
 
-1. Clone the repo and fetch the submodules
+1. Clone the repo and fetch the submodules.
 
 ```sh
 git clone git@github.com:lukso-network/network-docker-containers.git
@@ -24,11 +24,13 @@ git submodule update --recursive
 
 NOTE: if you want to support multiple networks, it is recommended to clone this repo again and work from different directories. This is to avoid mixing data and keystore folders.
 
-2. Install docker
+2. Install [docker](https://docs.docker.com/engine/install/ubuntu/).
+
+3. **IMPORTANT:** Adjust the values in `.env.[network]` file (node name, fee recipient address, etc.).
 
 **Non validator mode**
 
-3. Start the services:
+4. Start the services:
 
 ```sh
 # Compose V2 style (Docker):
@@ -40,9 +42,9 @@ docker compose --env-file .env.testnet up
 
 **Validator mode**
 
-3. Copy your `keystore-xxx.json` files in the [`./keystore](./keystore/) folder.
+4. Copy your `keystore-xxx.json` files in the [`./keystore](./keystore/) folder.
 
-4. Write your keystore password in a temporary txt file:
+5. Write your keystore password in a temporary txt file:
 
 ```sh
 echo "yourPassword" > /tmp/secrets/password.txt
@@ -51,7 +53,7 @@ echo "yourPassword" > /tmp/secrets/password.txt
 NOTE 1: This password will also be used for the validator wallet.
 NOTE 2: You can set your keystore password differently by changing the configuration in the `docker-compose.yml` file for the `prysm_validator_import` service.
 
-5. Start the services with the `validator` profile:
+6. Start the services with the `validator` profile:
 
 ```sh
 docker compose --env-file .env.testnet --profile validator up
