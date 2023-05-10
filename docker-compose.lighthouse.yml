@@ -1,0 +1,95 @@
+version: "3.4"
+services:
+
+  init-geth:
+    image: ethereum/client-go:$GETH_VERSION
+    container_name: lukso-geth-init
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+    command: >
+      --datadir=/execution_data init /configs/shared/genesis.json
+
+  geth:
+    image: ethereum/client-go:$GETH_VERSION
+    container_name: lukso-geth
+    depends_on:
+      - init-geth
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    command: >
+      --datadir=/execution_data
+      --ws
+      --ws.api "eth,net,web3,engine"
+      --ws.addr 0.0.0.0
+      --ws.origins "*"
+      --networkid $GETH_NETWORK_ID
+      --http
+      --http.api "eth,net,web3,engine"
+      --http.addr "0.0.0.0"
+      --http.corsdomain "*"
+      --http.vhosts "*"
+      --verbosity $GETH_VERBOSITY
+      --ipcdisable
+      --port $GETH_PEER_PORT
+      --http.port $GETH_HTTP_PORT
+      --metrics
+      --metrics.addr "0.0.0.0"
+      --authrpc.jwtsecret /configs/jwt.hex
+      --miner.gaslimit 42000000
+      --miner.gasprice 1000000000
+      --nat extip:$EXTERNAL_IP
+      --bootnodes $GETH_BOOTSTRAP_NODE
+     # --ethstats "${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
+    network_mode: host
+
+  lighthouse:
+    image: sigp/lighthouse:$LIGHTHOUSE_VERSION
+    restart: unless-stopped
+    depends_on:
+      - geth
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+      - $CONFIGS_VOLUME/lighthouse/deploy_block.txt:/configs/shared/deploy_block.txt
+    command:
+      - lighthouse
+      - --testnet-dir=/configs/shared
+      - bn
+      - --datadir=/consensus_data
+      - --listen-address=0.0.0.0
+      - --eth1
+      - --http
+      - --http-address=0.0.0.0
+      - --http-port=4000
+      - --enr-udp-port=9000
+      - --enr-tcp-port=9000
+      - --discovery-port=9000
+      - --enable-private-discovery
+      - --enr-address=$EXTERNAL_IP
+      - --execution-jwt=/configs/jwt.hex
+      - --execution-endpoint=http://localhost:8551
+      - --metrics
+      - --metrics-address=0.0.0.0
+      - --metrics-allow-origin=*
+      - --metrics-port=5054
+      - --suggested-fee-recipient=$FEE_RECIPIENT
+      - --boot-nodes=$CONSENSUS_BOOT_NODES
+      - --slots-per-restore-point=32
+    network_mode: host
+  
+  eth2stats-client:
+    image: macht/eth2stats-client:v1.0.0
+    container_name: eth2stats-client
+    restart: unless-stopped
+    command: >
+      run
+      --beacon.type=v1
+      --eth2stats.node-name=$NODE_NAME
+      --eth2stats.addr=$ETH_2_STATS_ADDRESS
+      --eth2stats.tls=false
+      --beacon.metrics-addr=http://127.0.0.1:5054/metrics
+      --beacon.addr=http://localhost:4000
+    network_mode: host
