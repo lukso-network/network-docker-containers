@@ -1,2 +1,5 @@
 configs
 data
+
+keystore/*
+!keystore/.gitkeep
