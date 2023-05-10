@@ -17,8 +17,7 @@ If you have database related issues (`database contains incompatible genesis`), 
 
 This repo is using the following docker images:
 
-- Geth: https://hub.docker.com/r/ethereum/client-go
-- Prysm: https://hub.docker.com/r/prysmaticlabs/prysm-beacon-chain
-- Prysm validator: https://hub.docker.com/r/prysmaticlabs/prysm-validator
-
-- https://hub.docker.com/r/macht/eth2stats-client
+- Geth: [ethereum/client-go](https://hub.docker.com/r/ethereum/client-go)
+- Prysm: [prysmaticlabs/prysm-beacon-chain](https://hub.docker.com/r/prysmaticlabs/prysm-beacon-chain)
+- Prysm validator: [prysmaticlabs/prysm-validator](https://hub.docker.com/r/prysmaticlabs/prysm-validator)
+- [macht/eth2stats-client](https://hub.docker.com/r/macht/eth2stats-client)
