@@ -4,10 +4,15 @@ This repo provides a base template to use Docker images to run LUKSO node (valid
 
 LUKSO network configs are fetched from: [lukso-network/network-configs](https://github.com/lukso-network/network-configs).
 
-It is provided "as is" and you are encouraged to adjust the configuration files for your own needs. The most important configuration files (which can't be changed) are the genesis files:
+It is provided "as is" and you are encouraged to adjust the configuration files for your own needs. The most important configuration files are the genesis files:
 
 - `genesis.ssz`
 - `genesis.json`
+
+**⚠️ Important:** for mainnet launch, you have to select the genesis files with the initial supply you want to have:
+
+- `genesis_32.ssz`, `genesis_42.ssz` or `genesis_100.ssz`
+- `genesis_32.json`, `genesis_42.json` or `genesis_100.json`
 
 They can be found in our [`lukso-network/network-configs`](https://github.com/lukso-network/network-configs) repo.
 
@@ -19,7 +24,8 @@ For more information, check the [LUKSO Docs](https://docs.lukso.tech/networks/ma
 
 ```sh
 git clone git@github.com:lukso-network/network-docker-containers.git
-git submodule update --recursive
+cd network-docker-containers
+git submodule update --init --recursive --depth 1
 ```
 
 NOTE: if you want to support multiple networks, it is recommended to clone this repo again and work from different directories. This is to avoid mixing data and keystore folders.
@@ -42,7 +48,7 @@ docker compose --env-file .env.testnet up
 
 **Validator mode**
 
-4. Copy your `keystore-xxx.json` files in the [`./keystore](./keystore/) folder.
+4. Copy your `keystore-xxx.json` files in the [`./keystore`](./keystore/) folder.
 
 5. Write your keystore password in a temporary txt file:
 
@@ -51,6 +57,7 @@ echo "yourPassword" > /tmp/secrets/password.txt
 ```
 
 NOTE 1: This password will also be used for the validator wallet.
+
 NOTE 2: You can set your keystore password differently by changing the configuration in the `docker-compose.yml` file for the `prysm_validator_import` service.
 
 6. Start the services with the `validator` profile:
@@ -60,6 +67,8 @@ docker compose --env-file .env.testnet --profile validator up
 
 # To run in the background, use detached mode with -d flag
 ```
+
+Check the logs to make sure everything is running fine.
 
 If you have database related issues (`database contains incompatible genesis`), delete the `./data` folder.
 
