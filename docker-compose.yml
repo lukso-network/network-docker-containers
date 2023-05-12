@@ -22,26 +22,22 @@ services:
     stop_signal: SIGINT
     stop_grace_period: 2m
     command: >
+      --config /configs/geth/geth.toml
       --datadir=/execution_data
       --ws
       --ws.api "eth,net,web3,engine"
       --ws.addr 0.0.0.0
       --ws.origins "*"
-      --networkid $GETH_NETWORK_ID
       --http
       --http.api "eth,net,web3,engine"
       --http.addr "0.0.0.0"
       --http.corsdomain "*"
       --http.vhosts "*"
-      --verbosity $GETH_VERBOSITY
       --ipcdisable
-      --port $GETH_PEER_PORT
-      --http.port $GETH_HTTP_PORT
       --metrics
       --metrics.addr "0.0.0.0"
       --authrpc.jwtsecret /configs/jwt.hex
-      --miner.gaslimit 42000000
-      --miner.gasprice 1000000000
+     # --networkid 4201
      # --ethstats "${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
     network_mode: host
 
@@ -65,7 +61,6 @@ services:
       --datadir=/consensus_data
       --execution-endpoint=http://localhost:8551
       --jwt-secret=/configs/jwt.hex
-      --verbosity $PRYSM_VERBOSITY
       --suggested-fee-recipient $FEE_RECIPIENT
      # --contract-deployment-block {{ contract_deployment_block }}
      # You override, add your custom flags here.
@@ -89,7 +84,7 @@ services:
       --account-password-file=/tmp/secrets/password.txt
     profiles:
       - validator
-  
+
   eth2stats-client:
     image: macht/eth2stats-client:v1.0.0
     container_name: eth2stats-client
