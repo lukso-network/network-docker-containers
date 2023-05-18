@@ -2,6 +2,8 @@
 
 This repo provides a base template to use Docker images to run LUKSO node (validator and non validator nodes).
 
+Note: it has been tested on Ubuntu 22.04. It won't work on macOS (because of `network_mode: host`).
+
 LUKSO network configs are fetched from: [lukso-network/network-configs](https://github.com/lukso-network/network-configs).
 
 It is provided "as is" and you are encouraged to adjust the configuration files for your own needs. The most important configuration files are the genesis files:
