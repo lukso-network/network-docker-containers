@@ -9,7 +9,7 @@ It is provided "as is" and you are encouraged to adjust the configuration files 
 - `genesis.ssz`
 - `genesis.json`
 
-**⚠️ Important:** for mainnet launch, you have to select the genesis files with the initial supply you want to have:
+**⚠️ Important:** for mainnet launch, you have to select the genesis files with the initial supply you want to have (cf. step 6 below):
 
 - `genesis_32.ssz`, `genesis_42.ssz` or `genesis_100.ssz`
 - `genesis_32.json`, `genesis_42.json` or `genesis_100.json`
@@ -31,10 +31,9 @@ git submodule update --init --recursive --depth 1
 NOTE: if you want to support multiple networks, it is recommended to clone this repo again and work from different directories. This is to avoid mixing data and keystore folders.
 
 2. Install [docker](https://docs.docker.com/engine/install/ubuntu/).
+   Here is a tutorial for [Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-22-04)
 
-3. **IMPORTANT:** Adjust the values in `.env.[network]` file (node name, fee recipient address, etc.).
-
-**Validator mode**
+3. **IMPORTANT:** Adjust the values in `.env` file (node name, fee recipient address, etc.).
 
 4. Copy your `keystore-xxx.json` files in the [`./keystores/[network]`](./keystores) folder.
 
@@ -69,9 +68,28 @@ docker compose up
 # docker compose --env-file .env.testnet up
 ```
 
-Check the logs to make sure everything is running fine.
+### Useful commands
 
-If you have database related issues (`database contains incompatible genesis`), delete the `./data` folder.
+Check the status of the containers:
+
+```sh
+docker ps
+
+# CONTAINER ID   IMAGE                                       COMMAND                  CREATED              STATUS                         PORTS                    NAMES
+# 1ffeefcbcfb4   prysmaticlabs/prysm-validator:v4.0.3        "/app/cmd/validator/…"   About a minute ago   Up About a minute                                       prysm_validator
+# 1dff26d8026a   prysmaticlabs/prysm-beacon-chain:v4.0.3     "/app/cmd/beacon-cha…"   About a minute ago   Up About a minute                                       prysm_beacon
+# b3e2c814ddb5   ethereum/client-go:v1.11.6                  "geth --config /conf…"   About a minute ago   Up About a minute                                       geth
+```
+
+Check the logs to make sure everything is running fine:
+
+```sh
+docker compose logs -f geth
+
+# You can see the logs of each service:
+# docker compose logs -f prysm_validator
+# ...
+```
 
 ## Monitoring
 

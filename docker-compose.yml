@@ -3,7 +3,7 @@ services:
 
   init-geth:
     image: ethereum/client-go:$GETH_VERSION
-    container_name: lukso-geth-init
+    container_name: geth-init
     volumes:
       - $EXECUTION_DATA_VOLUME:/execution_data
       - $CONFIGS_VOLUME:/configs
@@ -12,7 +12,7 @@ services:
 
   geth:
     image: ethereum/client-go:$GETH_VERSION
-    container_name: lukso-geth
+    container_name: geth
     depends_on:
       - init-geth
     volumes:
@@ -34,12 +34,14 @@ services:
       --http.corsdomain "*"
       --http.vhosts "*"
       --ipcdisable
-      --metrics
-      --metrics.addr "0.0.0.0"
       --authrpc.jwtsecret /configs/jwt.hex
-     # --ethstats "${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
      # Add your custom flags here:
      # https://geth.ethereum.org/docs/fundamentals/command-line-options
+     # --ethstats "${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
+     # --metrics
+     # --metrics.addr "0.0.0.0"
+     # --pprof
+     # --pprof.addr=0.0.0.0
     network_mode: host
 
   prysm_beacon:
