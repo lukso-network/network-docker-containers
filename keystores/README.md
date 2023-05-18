@@ -1,3 +1,3 @@
 # Keystores
 
-Put your keystores here in the corresponding network folder.
+Copy your `keystore-xxx-[timestamp].json` files here so they can be imported in the validator wallet.
