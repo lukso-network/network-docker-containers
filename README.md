@@ -20,24 +20,39 @@ For more information, check the [LUKSO Docs](https://docs.lukso.tech/networks/ma
 
 ## How to use
 
-1. Clone the repo and fetch the submodules.
+1. Log into your node.
+2. Install [docker](https://docs.docker.com/engine/install/ubuntu/).
+   Here is a tutorial for [Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-22-04)
+
+3. Clone the repo.
 
 ```sh
 git clone git@github.com:lukso-network/network-docker-containers.git
 cd network-docker-containers
-git submodule update --init --recursive --depth 1
 ```
 
-NOTE: if you want to support multiple networks, it is recommended to clone this repo again and work from different directories. This is to avoid mixing data and keystore folders.
+⚠️ NOTE: if you want to support multiple networks, it is recommended to clone this repo again and work from different directories. This is to avoid mixing data and keystore folders.
 
-2. Install [docker](https://docs.docker.com/engine/install/ubuntu/).
-   Here is a tutorial for [Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-22-04)
+4. Download the config files from [`lukso-network/network-configs`](https://github.com/lukso-network/network-configs) repo.
 
-3. **IMPORTANT:** Adjust the values in `.env` file (node name, fee recipient address, etc.).
+```
+mkdir configs
+wget -O ./configs/genesis.ssz https://raw.githubusercontent.com/lukso-network/network-configs/main/mainnet/shared/genesis_42.ssz
+wget -O ./configs/genesis.json https://raw.githubusercontent.com/lukso-network/network-configs/main/mainnet/shared/genesis_42.json
+wget -O ./configs/config.yaml https://raw.githubusercontent.com/lukso-network/network-configs/main/mainnet/shared/config.yaml
+```
 
-4. Copy your `keystore-xxx.json` files in the [`./keystores/[network]`](./keystores) folder.
+⚠️ NOTE: The example above is for the 42M LYX supply. If you want to use another supply, replace 42 with 35 or 100 in the commands above.
 
-5. Write your keystore password in a temporary txt file:
+5. **IMPORTANT:** Create `.env` file and adjust the values in `.env` file (node name, fee recipient address, etc.).
+
+```
+cp .env.example .env
+```
+
+6. Copy your `keystore-xxx.json` files in the [`./keystores/`](./keystores) folder.
+
+7. Write your keystore password in a temporary txt file:
 
 ```sh
 echo "yourPassword" > /tmp/secrets/password.txt
@@ -47,25 +62,12 @@ NOTE 1: This password will also be used for the validator wallet.
 
 NOTE 2: You can set your keystore password differently by changing the configuration in the `docker-compose.yml` file for the `prysm_validator_import` service.
 
-6. For mainnet, you need to select your supply:
-
-```sh
-# Example to select the 42M supply
-cp network-configs/mainnet/shared/genesis_42.json network-configs/mainnet/shared/genesis.json
-cp network-configs/mainnet/shared/genesis_42.ssz network-configs/mainnet/shared/genesis.ssz
-
-# For other supplies, replace 42 with 35 or 100
-```
-
-7. Start the services:
+8. Start the services:
 
 ```sh
 docker compose up
 
 # To run in the background, use detached mode with -d flag
-
-# For testnet:
-# docker compose --env-file .env.testnet up
 ```
 
 ### Useful commands
