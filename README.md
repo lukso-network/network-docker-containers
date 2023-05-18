@@ -93,7 +93,33 @@ docker compose logs -f geth
 
 ## Monitoring
 
-We provide another repo which can help you set up monitoring for your node: [`lukso-network/network-docker-monitoring`](https://github.com/lukso-network/network-docker-monitoring)
+We provide another repo which can help you set up monitoring for your node: [`lukso-network/network-docker-monitoring`](https://github.com/lukso-network/network-docker-monitoring).
+
+You will need to uncomment these lines in the [`docker-compose.yml`](./docker-compose.yml) file:
+
+```txt
+--metrics
+--metrics.addr "0.0.0.0"
+--pprof
+--pprof.addr=0.0.0.0
+```
+
+### Execution stats
+
+To add your node on the [execution stats page](https://stats.execution.mainnet.lukso.network/), fill out [this form](https://docs.google.com/forms/d/e/1FAIpQLSf6_vflZkaRh8dgHMiFtZI5g3DrBFKP4Sc2l2DBW95OWRFO9g/viewform) to receive the secret.
+
+You will then need to update these values in the [`.env`](./.env) file:
+
+```
+NODE_NAME=myNodeName
+ETH_STATS_SECRET=xxx
+```
+
+And uncomment this line in the [`docker-compose.yml`](./docker-compose.yml) file:
+
+```
+--ethstats "${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
+```
 
 ## Images
 
@@ -103,3 +129,10 @@ This repo is using the following docker images:
 - Prysm: [prysmaticlabs/prysm-beacon-chain](https://hub.docker.com/r/prysmaticlabs/prysm-beacon-chain)
 - Prysm validator: [prysmaticlabs/prysm-validator](https://hub.docker.com/r/prysmaticlabs/prysm-validator)
 - [macht/eth2stats-client](https://hub.docker.com/r/macht/eth2stats-client)
+
+## Resources
+
+- [LUKSO Docs](https://docs.lukso.network)
+- [Genesis Validators, start your clients!](https://medium.com/lukso/genesis-validators-start-your-clients-fe01db8f3fba)
+- [GitHub repo: lukso-network/network-configs](https://github.com/lukso-network/network-configs)
+- [Deposit launchpad](https://deposit.mainnet.lukso.network/)
