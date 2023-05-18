@@ -1,5 +1,8 @@
 configs
 data
 
-keystore/*
-!keystore/.gitkeep
+keystores/mainnet/*
+!keystores/mainnet/.gitkeep
+
+keystores/testnet/*
+!keystores/testnet/.gitkeep

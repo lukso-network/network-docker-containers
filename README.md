@@ -34,21 +34,9 @@ NOTE: if you want to support multiple networks, it is recommended to clone this 
 
 3. **IMPORTANT:** Adjust the values in `.env.[network]` file (node name, fee recipient address, etc.).
 
-**Non validator mode**
-
-4. Start the services:
-
-```sh
-# Compose V2 style (Docker):
-docker compose --env-file .env.testnet up
-
-# For compose V1 style (Docker), use:
-# docker-compose --env-file .env.testnet up
-```
-
 **Validator mode**
 
-4. Copy your `keystore-xxx.json` files in the [`./keystore`](./keystore/) folder.
+4. Copy your `keystore-xxx.json` files in the [`./keystores/[network]`](./keystores) folder.
 
 5. Write your keystore password in a temporary txt file:
 
@@ -60,10 +48,10 @@ NOTE 1: This password will also be used for the validator wallet.
 
 NOTE 2: You can set your keystore password differently by changing the configuration in the `docker-compose.yml` file for the `prysm_validator_import` service.
 
-6. Start the services with the `validator` profile:
+6. Start the services:
 
 ```sh
-docker compose --env-file .env.testnet --profile validator up
+docker compose --env-file .env.testnet up
 
 # To run in the background, use detached mode with -d flag
 ```
@@ -71,6 +59,10 @@ docker compose --env-file .env.testnet --profile validator up
 Check the logs to make sure everything is running fine.
 
 If you have database related issues (`database contains incompatible genesis`), delete the `./data` folder.
+
+## Monitoring
+
+We provide another repo which can help you set up monitoring for your node: [`lukso-network/network-docker-monitoring`](https://github.com/lukso-network/network-docker-monitoring)
 
 ## Images
 

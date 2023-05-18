@@ -1,4 +1,4 @@
-version: "3.4"
+version: "3.8"
 services:
 
   init-geth:
@@ -38,6 +38,8 @@ services:
       --metrics.addr "0.0.0.0"
       --authrpc.jwtsecret /configs/jwt.hex
      # --ethstats "${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
+     # Add your custom flags here:
+     # https://geth.ethereum.org/docs/fundamentals/command-line-options
     network_mode: host
 
   prysm_beacon:
@@ -45,7 +47,6 @@ services:
     container_name: prysm_beacon
     depends_on:
       - geth
-      - eth2stats-client
     volumes:
       - $CONSENSUS_DATA_VOLUME:/consensus_data
       - $CONFIGS_VOLUME:/configs
@@ -61,13 +62,12 @@ services:
       --execution-endpoint=http://localhost:8551
       --jwt-secret=/configs/jwt.hex
       --suggested-fee-recipient $FEE_RECIPIENT
-     # --contract-deployment-block {{ contract_deployment_block }}
-     # You override, add your custom flags here.
+     # Add your custom flags here.
      # Docs: https://docs.prylabs.network/docs/prysm-usage/parameters#beacon-node-flags
     network_mode: host
   
   prysm_validator_import:
-    image: prysmaticlabs/prysm-validator:v4.0.1
+    image: prysmaticlabs/prysm-validator:v4.0.3
     container_name: prysm_validator_import
     volumes:
       - $KEYSTORE_VOLUME:/keystore
@@ -81,19 +81,35 @@ services:
       --wallet-dir=/keystore/prysm
       --wallet-password-file=/tmp/secrets/password.txt
       --account-password-file=/tmp/secrets/password.txt
-    profiles:
-      - validator
 
-  eth2stats-client:
-    image: macht/eth2stats-client:v1.0.0
-    container_name: eth2stats-client
+  prysm_validator:
+    image: prysmaticlabs/prysm-validator:v4.0.3
+    container_name: prysm_validator
+    depends_on:
+      prysm_beacon:
+        condition: service_started
+      prysm_validator_import:
+        condition: service_completed_successfully
+    volumes:
+      - $KEYSTORE_VOLUME:/keystore
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $CONFIGS_VOLUME:/configs
+      - $TMP_VOLUME:/tmp/secrets
     restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
     command: >
-      run
-      --beacon.type=prysm
-      --eth2stats.node-name=$NODE_NAME
-      --eth2stats.tls=false
-      --beacon.metrics-addr=http://127.0.0.1:8080/metrics
-      --beacon.addr=127.0.0.1:4000
-      --eth2stats.addr=$ETH_2_STATS_ADDRESS
+      --accept-terms-of-use
+      --datadir /validator_data
+      --wallet-dir /keystore/prysm
+      --wallet-password-file /tmp/secrets/password.txt
+      --chain-config-file /configs/shared/config.yaml
+      --monitoring-host 0.0.0.0
+      --grpc-gateway-host 0.0.0.0
+      --rpc-host 0.0.0.0
+      --suggested-fee-recipient $FEE_RECIPIENT
     network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
