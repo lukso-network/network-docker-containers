@@ -4,4 +4,4 @@ data
 .env
 
 keystores/*
-!keystores/.gitkeep
+!keystores/README.md
