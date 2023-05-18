@@ -99,15 +99,6 @@ docker compose logs -f geth
 
 We provide another repo which can help you set up monitoring for your node: [`lukso-network/network-docker-monitoring`](https://github.com/lukso-network/network-docker-monitoring).
 
-You will need to uncomment these lines in the [`docker-compose.yml`](./docker-compose.yml) file:
-
-```txt
---metrics
---metrics.addr "0.0.0.0"
---pprof
---pprof.addr=0.0.0.0
-```
-
 ### Execution stats
 
 To add your node on the [execution stats page](https://stats.execution.mainnet.lukso.network/), fill out [this form](https://docs.google.com/forms/d/e/1FAIpQLSf6_vflZkaRh8dgHMiFtZI5g3DrBFKP4Sc2l2DBW95OWRFO9g/viewform) to receive the secret.
@@ -117,12 +108,6 @@ You will then need to update these values in the [`.env`](./.env) file:
 ```
 NODE_NAME=myNodeName
 ETH_STATS_SECRET=xxx
-```
-
-And uncomment this line in the [`docker-compose.yml`](./docker-compose.yml) file:
-
-```
---ethstats "${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
 ```
 
 ## Images
