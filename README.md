@@ -48,12 +48,25 @@ NOTE 1: This password will also be used for the validator wallet.
 
 NOTE 2: You can set your keystore password differently by changing the configuration in the `docker-compose.yml` file for the `prysm_validator_import` service.
 
-6. Start the services:
+6. For mainnet, you need to select your supply:
 
 ```sh
-docker compose --env-file .env.testnet up
+# Example to select the 42M supply
+cp network-configs/mainnet/shared/genesis_42.json network-configs/mainnet/shared/genesis.json
+cp network-configs/mainnet/shared/genesis_42.ssz network-configs/mainnet/shared/genesis.ssz
+
+# For other supplies, replace 42 with 35 or 100
+```
+
+7. Start the services:
+
+```sh
+docker compose up
 
 # To run in the background, use detached mode with -d flag
+
+# For testnet:
+# docker compose --env-file .env.testnet up
 ```
 
 Check the logs to make sure everything is running fine.
