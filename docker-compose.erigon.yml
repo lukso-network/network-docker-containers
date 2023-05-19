@@ -27,7 +27,7 @@ services:
       --miner.gaslimit=42000000
       --authrpc.jwtsecret=/configs/jwt.hex
       --snapshots=0
-      --nat="any"
+      --nat="extip:$EXTERNAL_IP"
       --http
       --http.addr="0.0.0.0"
       --http.api="erigon,engine"
