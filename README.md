@@ -72,6 +72,10 @@ docker compose up
 # To run in the background, use detached mode with -d flag
 ```
 
+### Erigon
+
+An example docker compose file for erigon is provided in [`docker-compose.erigon.yml`](./docker-compose.erigon.yml). It only supports erigon execution engine. You will need to run an execution engine for your node to work properly. This file is provded "as is" and you can reuse it in the main `docker-compose.yml` file if you wish to use erigon client instead of geth.
+
 ### Useful commands
 
 Check the status of the containers:
