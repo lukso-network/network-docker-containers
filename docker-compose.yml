@@ -35,8 +35,8 @@ services:
       --ipcdisable
       --authrpc.jwtsecret /configs/jwt.hex
       --datadir=/execution_data
-      --bootnodes $GETH_BOOTSTRAP_NODE
-      --networkid 42
+      --bootnodes $EXECUTION_BOOTSTRAP_NODE_1
+      --networkid $LUKSO_MAINNET_NETWORK_ID
       --verbosity $GETH_VERBOSITY
       --metrics
       --metrics.addr "0.0.0.0"
