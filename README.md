@@ -1,6 +1,6 @@
 # LUKSO Docker containers
 
-This repo provides a base template to use Docker images to run LUKSO node (validator and non validator nodes).
+This repo provides a base template to use Docker images to run LUKSO node validator nodes).
 
 Note: it has been tested on Ubuntu 22.04. It won't work on macOS (because of `network_mode: host`).
 
