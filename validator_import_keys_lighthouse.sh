@@ -1,7 +1,6 @@
 export $(grep -v '^#' .env)
 docker run \
   --rm \
-  --env-file=.env \
   --volume $CONFIGS_VOLUME:/configs \
   --volume $TMP_VOLUME:/tmp/secrets \
   --volume $KEYSTORES_VOLUME:/keystores \
