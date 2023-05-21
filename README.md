@@ -64,7 +64,12 @@ NOTE 1: This password will also be used for the validator wallet.
 
 NOTE 2: You can set your keystore password differently by changing the configuration in the `docker-compose.yml` file for the `prysm_validator_import` service.
 
-8. Start the services:
+8. Generate a jwt secret using
+```sh
+openssl rand -hex 32 | tee ./jwtsecret/jwt.hex > /dev/null
+```
+
+9. Start the services:
 
 ```sh
 docker compose up
@@ -75,6 +80,12 @@ docker compose up
 ### Erigon
 
 An example docker compose file for erigon is provided in [`docker-compose.erigon.yml`](./docker-compose.erigon.yml). It only supports erigon execution engine. You will need to run an execution engine for your node to work properly. This file is provded "as is" and you can reuse it in the main `docker-compose.yml` file if you wish to use erigon client instead of geth.
+
+### Erigon + Lighthouse
+
+An example docker compose file for erigon and lighthouse is provided in [`docker-compose.erigon.lighthouse.yml`](docker-compose.erigon.lighthouse.yml). You can use this file to start up erigon as execution engine with lighthouse as your consensus and validator. You can use this file instead of the default `docker-compose.yml` with the command `docker-compose -f docker-compose.erigon.lighthouse.yml up`
+
+After your nodes have started successfully. Import the validator keys from keystore using the bash script `./validator_import_keys_lighthouse.sh`
 
 ### Useful commands
 

@@ -18,6 +18,7 @@ services:
     volumes:
       - $EXECUTION_DATA_VOLUME:/execution_data
       - $CONFIGS_VOLUME:/configs
+      - $JWT_SECRET:/jwt.hex:ro
     restart: unless-stopped
     stop_signal: SIGINT
     stop_grace_period: 2m
@@ -33,7 +34,7 @@ services:
       --http.corsdomain "*"
       --http.vhosts "*"
       --ipcdisable
-      --authrpc.jwtsecret /configs/jwt.hex
+      --authrpc.jwtsecret /jwt.hex
       --datadir=/execution_data
       --bootnodes $EXECUTION_BOOTSTRAP_NODE_1
       --networkid $LUKSO_MAINNET_NETWORK_ID
@@ -60,6 +61,7 @@ services:
     volumes:
       - $CONSENSUS_DATA_VOLUME:/consensus_data
       - $CONFIGS_VOLUME:/configs
+      - $JWT_SECRET:/jwt.hex:ro
     restart: unless-stopped
     stop_signal: SIGINT
     stop_grace_period: 2m
@@ -68,9 +70,9 @@ services:
       --genesis-state=/configs/genesis.ssz
       --chain-config-file=/configs/config.yaml
       --datadir=/consensus_data
-      --bootstrap-node $PRYSM_BOOTSTRAP_NODE
+      --bootstrap-node $CONSENSUS_BOOTSTRAP_NODE
       --execution-endpoint=http://localhost:8551
-      --jwt-secret=/configs/jwt.hex
+      --jwt-secret=/jwt.hex
       --suggested-fee-recipient $FEE_RECIPIENT
       --min-sync-peers=0
       --monitoring-host 0.0.0.0

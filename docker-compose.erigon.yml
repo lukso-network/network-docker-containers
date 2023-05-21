@@ -17,6 +17,7 @@ services:
     volumes:
       - $EXECUTION_DATA_VOLUME:/execution_data
       - $CONFIGS_VOLUME:/configs
+      - $JWT_SECRET:/jwt.hex:ro
     restart: unless-stopped
     stop_signal: SIGINT
     stop_grace_period: 2m
@@ -25,7 +26,7 @@ services:
       --networkid=$LUKSO_MAINNET_NETWORK_ID
       --externalcl
       --miner.gaslimit=42000000
-      --authrpc.jwtsecret=/configs/jwt.hex
+      --authrpc.jwtsecret=/jwt.hex
       --snapshots=0
       --nat="extip:$EXTERNAL_IP"
       --http

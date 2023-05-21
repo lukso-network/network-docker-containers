@@ -1,0 +1,142 @@
+version: "3"
+services:
+  init-erigon:
+    image: thorax/erigon:$ERIGON_VERSION
+    networks:
+      - lukso_net
+    container_name: init-erigon
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+    command: >
+      --datadir=/execution_data init /configs/genesis.json
+    user: 1001:1001 #replace with the uid:gid of the user 'erigon'
+    # A new user 'erigon' can be created using: '$ sudo useradd erigon'
+    # And '$ cat /etc/passwd'
+    # you'll probably see something like 'erigon:x:1001:1001::/home/erigon:/bin/bash'
+
+  luksoexecution:
+    image: thorax/erigon:$ERIGON_VERSION
+    networks:
+      - lukso_net
+    container_name: luksoexecution
+    depends_on:
+      - init-erigon
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+      - $JWT_SECRET:/jwt.hex:ro
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --datadir=/execution_data
+      --networkid=$LUKSO_MAINNET_NETWORK_ID
+      --externalcl
+      --miner.gaslimit=42000000
+      --authrpc.jwtsecret=/jwt.hex
+      --snapshots=0
+      --nat="extip:$EXTERNAL_IP"
+      --http
+      --http.addr="0.0.0.0"
+      --http.api="erigon,engine"
+      --http.vhosts="*"
+      --authrpc.addr="0.0.0.0"
+      --authrpc.port=8551
+      --authrpc.vhosts="*"
+      --bootnodes="$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2"
+      --metrics
+      --metrics.addr="0.0.0.0"
+      --ethstats="${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
+    # ports:
+    #   - "30303:30303" # eth/66 peering
+    #   - "30304:30304" # eth/67 peering
+    #   - "9090:9090" # gRPC Connections
+    #   - "42069:42069" # Snap sync (Bittorrent)
+    #   - "6060:6060" # Metrics or Pprof
+    #   - "8551:8551" # Engine API (JWT auth)
+    expose:
+      - 8551
+    user: 1001:1001 #replace with the uid:gid of the user 'erigon'
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
+
+  luksoconsensus:
+    container_name: luksoconsensus
+    image: sigp/lighthouse:latest-modern
+    restart: unless-stopped
+    networks:
+      - lukso_net
+    ports:
+      - 9000:9000/tcp # p2p
+      - 9000:9000/udp # p2p
+      - 5054:5054/tcp # metrics
+    expose:
+      - 4000 # http
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+      - $JWT_SECRET:/jwt.hex:ro
+      
+    command: |
+      lighthouse
+      beacon_node
+      --testnet-dir="/configs"
+      --disable-upnp
+      --datadir=/consensus_data
+      --port=9000
+      --enr-udp-port=9000
+      --enr-tcp-port=9000
+      --discovery-port=9000
+      --enable-private-discovery
+      --enr-address="0.0.0.0"
+      --http
+      --http-address=0.0.0.0
+      --http-port=4000
+      --target-peers=80
+      --execution-endpoint=http://luksoexecution:8551
+      --execution-jwt=/jwt.hex
+      --listen-address="0.0.0.0"
+      --eth1
+      --debug-level=info
+      --validator-monitor-auto
+      --subscribe-all-subnets
+      --import-all-attestations
+      --metrics
+      --metrics-port=5054
+      --metrics-address=0.0.0.0
+      --boot-nodes=$CONSENSUS_BOOTSTRAP_NODE
+
+  luksovalidator:
+    container_name: luksovalidator
+    image: sigp/lighthouse:latest-modern
+    restart: always
+    command: |
+      lighthouse
+      validator_client
+      --testnet-dir="/configs"
+      --datadir=/validator_data
+      --beacon-nodes=http://luksoconsensus:4000
+      --graffiti=$GRAFFITI
+      --debug-level=info
+      --suggested-fee-recipient=$FEE_RECIPIENT
+      --metrics
+      --metrics-address=0.0.0.0
+      --metrics-port=5064
+    networks:
+      - lukso_net
+    ports:
+      - 5064:5064/tcp
+    volumes:
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $CONFIGS_VOLUME:/configs
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    logging:
+      driver: "local"
+
+networks:
+  lukso_net:
+    name: lukso_net
