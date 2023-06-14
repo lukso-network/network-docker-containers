@@ -5,3 +5,5 @@ data
 
 keystores/*
 !keystores/README.md
+
+.idea
