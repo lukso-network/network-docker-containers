@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  teku:
+    image: consensys/teku:$TEKU_VERSION
+    container_name: teku
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+      - $LOGS_VOLUME:/logs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --initial-state /configs/genesis.ssz
+      --network /configs/config.yaml
+      --data-path /consensus_data
+      --p2p-discovery-bootnodes $CONSENSUS_BOOTSTRAP_NODE_1
+      --ee-endpoint http://0.0.0.0:8551
+      --ee-jwt-secret-file /configs/jwt.hex
+      --validators-proposer-default-fee-recipient $FEE_RECIPIENT
+      --p2p-interface $EXTERNAL_IP
+      --p2p-port 9000
+      --p2p-peer-lower-bound 0
+      --p2p-peer-upper-bound 250
+      --p2p-subscribe-all-subnets-enabled
+      --metrics-enabled
+      --metrics-interface 0.0.0.0
+      --rest-api-enabled
+      --rest-api-host-allowlist=*
+      --rest-api-interface 0.0.0.0
+      --rest-api-cors-origins=*
+    ports:
+      - "9000:9000/tcp"
+      - "9000:9000/udp"
+      - "5051:5051"
+#    network_mode: host
+#    logging:
+#      driver: "local"
+#      options:
+#        max-size: "100m"
