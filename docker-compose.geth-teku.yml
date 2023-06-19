@@ -1,6 +1,57 @@
 version: "3.8"
-
 services:
+
+  init-geth:
+    image: ethereum/client-go:$GETH_VERSION
+    container_name: geth-init
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+    command: >
+      --datadir=/execution_data init /configs/genesis.json
+
+  geth:
+    image: ethereum/client-go:$GETH_VERSION
+    container_name: geth
+    depends_on:
+      - init-geth
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --datadir=/execution_data
+      --ws
+      --ws.api "eth,net"
+      --ws.addr 0.0.0.0
+      --ws.origins "*"
+      --http
+      --http.api "eth,net"
+      --http.addr "0.0.0.0"
+      --http.corsdomain "*"
+      --http.vhosts "*"
+      --ipcdisable
+      --authrpc.jwtsecret /configs/jwt.hex
+      --datadir=/execution_data
+      --bootnodes $EXECUTION_BOOTSTRAP_NODE_1
+      --networkid $LUKSO_MAINNET_NETWORK_ID
+      --verbosity $GETH_VERBOSITY
+      --metrics
+      --metrics.addr "0.0.0.0"
+      --miner.gaslimit 42000000
+      --miner.gasprice 4200000000
+      --ethstats "${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
+      --nat extip:$EXTERNAL_IP
+      # Change/add your custom flags here:
+      # https://geth.ethereum.org/docs/fundamentals/command-line-options
+    network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
+
   teku:
     image: consensys/teku:$TEKU_VERSION
     container_name: teku
