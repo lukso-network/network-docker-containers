@@ -31,3 +31,90 @@ services:
       driver: "local"
       options:
         max-size: "100m"
+
+  prysm_beacon:
+    image: prysmaticlabs/prysm-beacon-chain:$PRYSM_BEACON_VERSION
+    container_name: prysm_beacon
+    depends_on:
+      - geth
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --accept-terms-of-use
+      --genesis-state=/configs/genesis.ssz
+      --chain-config-file=/configs/config.yaml
+      --datadir=/consensus_data
+      --bootstrap-node $PRYSM_BOOTSTRAP_NODE
+      --execution-endpoint=http://localhost:8551
+      --jwt-secret=/configs/jwt.hex
+      --suggested-fee-recipient $FEE_RECIPIENT
+      --min-sync-peers=0
+      --monitoring-host 0.0.0.0
+      --grpc-gateway-host 0.0.0.0
+      --rpc-host 0.0.0.0
+      --verbosity $PRYSM_VERBOSITY
+      --p2p-max-peers 250
+      --subscribe-all-subnets
+      --minimum-peers-per-subnet 0
+      --contract-deployment-block 0
+      --block-batch-limit 512
+      --block-batch-limit-burst-factor 10
+      --p2p-host-ip $EXTERNAL_IP
+      # Add your custom flags here.
+      # Docs: https://docs.prylabs.network/docs/prysm-usage/parameters#beacon-node-flags
+    network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
+
+  prysm_validator_import:
+    image: prysmaticlabs/prysm-validator:v4.0.3
+    container_name: prysm_validator_import
+    volumes:
+      - $KEYSTORES_VOLUME:/keystore
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $TMP_VOLUME:/tmp/secrets
+    command: >
+      accounts import
+      --accept-terms-of-use
+      --keys-dir=/keystore
+      --wallet-dir=/keystore/prysm
+      --wallet-password-file=/tmp/secrets/password.txt
+      --account-password-file=/tmp/secrets/password.txt
+
+  prysm_validator:
+    image: prysmaticlabs/prysm-validator:v4.0.3
+    container_name: prysm_validator
+    depends_on:
+      prysm_beacon:
+        condition: service_started
+      prysm_validator_import:
+        condition: service_completed_successfully
+    volumes:
+      - $KEYSTORES_VOLUME:/keystore
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $CONFIGS_VOLUME:/configs
+      - $TMP_VOLUME:/tmp/secrets
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --accept-terms-of-use
+      --datadir /validator_data
+      --wallet-dir /keystore/prysm
+      --wallet-password-file /tmp/secrets/password.txt
+      --chain-config-file /configs/config.yaml
+      --monitoring-host 0.0.0.0
+      --grpc-gateway-host 0.0.0.0
+      --rpc-host 0.0.0.0
+      --suggested-fee-recipient $FEE_RECIPIENT
+    network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
