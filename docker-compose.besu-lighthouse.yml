@@ -31,3 +31,38 @@ services:
       driver: "local"
       options:
         max-size: "100m"
+
+  lighthouse:
+    image: sigp/lighthouse:$LIGHTHOUSE_VERSION
+    restart: unless-stopped
+    depends_on:
+      - geth
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+      - $CONFIGS_VOLUME/lighthouse/deploy_block.txt:/configs/shared/deploy_block.txt
+    command:
+      - lighthouse
+      - --testnet-dir=/configs/shared
+      - bn
+      - --datadir=/consensus_data
+      - --listen-address=0.0.0.0
+      - --eth1
+      - --http
+      - --http-address=0.0.0.0
+      - --http-port=4000
+      - --enr-udp-port=9000
+      - --enr-tcp-port=9000
+      - --discovery-port=9000
+      - --enable-private-discovery
+      - --enr-address=$EXTERNAL_IP
+      - --execution-jwt=/configs/jwt.hex
+      - --execution-endpoint=http://localhost:8551
+      - --metrics
+      - --metrics-address=0.0.0.0
+      - --metrics-allow-origin=*
+      - --metrics-port=5054
+      - --suggested-fee-recipient=$FEE_RECIPIENT
+      - --boot-nodes=$CONSENSUS_BOOT_NODES
+      - --slots-per-restore-point=32
+    network_mode: host
