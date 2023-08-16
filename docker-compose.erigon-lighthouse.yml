@@ -55,13 +55,13 @@ services:
 
   lighthouse:
     image: sigp/lighthouse:$LIGHTHOUSE_VERSION
+    container_name: lighthouse
     restart: unless-stopped
     depends_on:
-      - geth
+      - erigon
     volumes:
       - $CONSENSUS_DATA_VOLUME:/consensus_data
       - $CONFIGS_VOLUME:/configs
-      - $CONFIGS_VOLUME/lighthouse/deploy_block.txt:/configs/shared/deploy_block.txt
     command:
       - lighthouse
       - --testnet-dir=/configs/shared
@@ -86,4 +86,44 @@ services:
       - --suggested-fee-recipient=$FEE_RECIPIENT
       - --boot-nodes=$CONSENSUS_BOOT_NODES
       - --slots-per-restore-point=32
+    network_mode: host
+
+  lighthouse-validator-import:
+    image: sigp/lighthouse:$LIGHTHOUSE_VERSION
+    container_name: lighthouse-validator-import
+    volumes:
+      - $KEYSTORE_VOLUME:/keystore
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $TMP_VOLUME:/tmp/secrets
+    command: >
+      lighthouse am validator import
+      --datadir=/validator_data
+      --directory=/keystore
+      --password-file=/tmp/secrets/password.txt
+      --reuse-password
+
+  lighthouse-validator:
+    image: sigp/lighthouse:$LIGHTHOUSE_VERSION
+    container_name: lighthouse-validator
+    depends_on:
+      lighthouse:
+        condition: service_started
+      lighthouse-validator-import:
+        condition: service_completed_successfully
+    volumes:
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      lighthouse vc
+      --testnet-dir=/configs/shared
+      --validators-dir=/validator_data/validators
+      --beacon-nodes=http://127.0.0.1:4000
+      --init-slashing-protection
+      --http
+      --http-port=5062
+      --metrics
+      --metrics-port=5057
     network_mode: host
