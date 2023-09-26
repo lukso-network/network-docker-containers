@@ -56,7 +56,7 @@ services:
       - $CONFIGS_VOLUME/lighthouse/deploy_block.txt:/configs/shared/deploy_block.txt
     command:
       - lighthouse
-      - --testnet-dir=/configs/shared
+      - --testnet-dir=/configs
       - bn
       - --datadir=/consensus_data
       - --listen-address=0.0.0.0
@@ -110,7 +110,7 @@ services:
     stop_grace_period: 2m
     command: >
       lighthouse vc
-      --testnet-dir=/configs/shared
+      --testnet-dir=/configs
       --validators-dir=/validator_data
       --secrets-dir=/validator_data
       --beacon-nodes=http://127.0.0.1:4000
