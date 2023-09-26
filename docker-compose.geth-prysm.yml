@@ -68,7 +68,7 @@ services:
       --genesis-state=/configs/genesis.ssz
       --chain-config-file=/configs/config.yaml
       --datadir=/consensus_data
-      --bootstrap-node $PRYSM_BOOTSTRAP_NODE
+      --bootstrap-node $CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2
       --execution-endpoint=http://localhost:8551
       --jwt-secret=/configs/jwt.hex
       --suggested-fee-recipient $FEE_RECIPIENT

@@ -23,7 +23,7 @@ services:
     stop_grace_period: 2m
     command: >
       --datadir=/execution_data
-      --networkid=$LUKSO_MAINNET_NETWORK_ID
+      --networkid=$LUKSO_NETWORK_ID
       --externalcl
       --miner.gaslimit=42000000
       --authrpc.jwtsecret=/configs/jwt.hex
@@ -84,7 +84,7 @@ services:
       - --metrics-allow-origin=*
       - --metrics-port=5054
       - --suggested-fee-recipient=$FEE_RECIPIENT
-      - --boot-nodes=$CONSENSUS_BOOT_NODES
+      - --boot-nodes=$CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2
       - --slots-per-restore-point=32
     network_mode: host
 
