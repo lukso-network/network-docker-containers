@@ -13,7 +13,7 @@ services:
     command: >
       --data-path=/execution_data
       --genesis-file=/configs/genesis.json
-      --network-id=$LUKSO_MAINNET_NETWORK_ID
+      --network-id=$LUKSO_NETWORK_ID
       --engine-jwt-secret=/configs/jwt.hex
       --nat-method=DOCKER
       --p2p-host="$EXTERNAL_IP"

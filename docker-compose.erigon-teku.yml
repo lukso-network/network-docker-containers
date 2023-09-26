@@ -23,7 +23,7 @@ services:
     stop_grace_period: 2m
     command: >
       --datadir=/execution_data
-      --networkid=$LUKSO_MAINNET_NETWORK_ID
+      --networkid=$LUKSO_NETWORK_ID
       --externalcl
       --miner.gaslimit=42000000
       --authrpc.jwtsecret=/configs/jwt.hex
