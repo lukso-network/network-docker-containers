@@ -64,7 +64,7 @@ services:
       - $CONFIGS_VOLUME:/configs
     command:
       - lighthouse
-      - --testnet-dir=/configs/shared
+      - --testnet-dir=/configs
       - bn
       - --datadir=/consensus_data
       - --listen-address=0.0.0.0
@@ -118,7 +118,7 @@ services:
     stop_grace_period: 2m
     command: >
       lighthouse vc
-      --testnet-dir=/configs/shared
+      --testnet-dir=/configs
       --validators-dir=/validator_data/validators
       --beacon-nodes=http://127.0.0.1:4000
       --init-slashing-protection
