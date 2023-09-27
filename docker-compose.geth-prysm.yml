@@ -89,7 +89,7 @@ services:
         max-size: "100m"
   
   prysm_validator_import:
-    image: prysmaticlabs/prysm-validator:v4.0.3
+    image: prysmaticlabs/prysm-validator:$PRYSM_BEACON_VERSION
     container_name: prysm_validator_import
     volumes:
       - $KEYSTORE_VOLUME:/keystore
@@ -104,7 +104,7 @@ services:
       --account-password-file=/tmp/secrets/password.txt
 
   prysm_validator:
-    image: prysmaticlabs/prysm-validator:v4.0.3
+    image: prysmaticlabs/prysm-validator:$PRYSM_BEACON_VERSION
     container_name: prysm_validator
     depends_on:
       prysm_beacon:
