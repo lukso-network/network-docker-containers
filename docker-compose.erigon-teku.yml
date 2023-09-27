@@ -24,7 +24,6 @@ services:
     command: >
       --datadir=/execution_data
       --networkid=$LUKSO_NETWORK_ID
-      --externalcl
       --miner.gaslimit=42000000
       --authrpc.jwtsecret=/configs/jwt.hex
       --snapshots=0
@@ -40,13 +39,6 @@ services:
       --metrics
       --metrics.addr="0.0.0.0"
       --ethstats="${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
-    # ports:
-    #   - "30303:30303" # eth/66 peering
-    #   - "30304:30304" # eth/67 peering
-    #   - "9090:9090" # gRPC Connections
-    #   - "42069:42069" # Snap sync (Bittorrent)
-    #   - "6060:6060" # Metrics or Pprof
-    #   - "8551:8551" # Engine API (JWT auth)
     network_mode: host
     logging:
       driver: "local"
