@@ -13,7 +13,7 @@ services:
     command: >
       --data-path=/execution_data
       --genesis-file=/configs/genesis.json
-      --network-id=$LUKSO_MAINNET_NETWORK_ID
+      --network-id=$LUKSO_NETWORK_ID
       --engine-jwt-secret=/configs/jwt.hex
       --nat-method=DOCKER
       --p2p-host="$EXTERNAL_IP"
@@ -36,7 +36,7 @@ services:
     image: prysmaticlabs/prysm-beacon-chain:$PRYSM_BEACON_VERSION
     container_name: prysm_beacon
     depends_on:
-      - geth
+      - besu
     volumes:
       - $CONSENSUS_DATA_VOLUME:/consensus_data
       - $CONFIGS_VOLUME:/configs
@@ -48,7 +48,7 @@ services:
       --genesis-state=/configs/genesis.ssz
       --chain-config-file=/configs/config.yaml
       --datadir=/consensus_data
-      --bootstrap-node $PRYSM_BOOTSTRAP_NODE
+      --bootstrap-node $CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2
       --execution-endpoint=http://localhost:8551
       --jwt-secret=/configs/jwt.hex
       --suggested-fee-recipient $FEE_RECIPIENT
@@ -64,8 +64,6 @@ services:
       --block-batch-limit 512
       --block-batch-limit-burst-factor 10
       --p2p-host-ip $EXTERNAL_IP
-      # Add your custom flags here.
-      # Docs: https://docs.prylabs.network/docs/prysm-usage/parameters#beacon-node-flags
     network_mode: host
     logging:
       driver: "local"
@@ -73,22 +71,22 @@ services:
         max-size: "100m"
 
   prysm_validator_import:
-    image: prysmaticlabs/prysm-validator:v4.0.3
+    image: prysmaticlabs/prysm-validator:$PRYSM_BEACON_VERSION
     container_name: prysm_validator_import
     volumes:
-      - $KEYSTORES_VOLUME:/keystore
+      - $KEYSTORE_VOLUME:/keystore
       - $VALIDATOR_DATA_VOLUME:/validator_data
       - $TMP_VOLUME:/tmp/secrets
     command: >
       accounts import
       --accept-terms-of-use
       --keys-dir=/keystore
-      --wallet-dir=/keystore/prysm
+      --wallet-dir=/validator_data/wallet
       --wallet-password-file=/tmp/secrets/password.txt
       --account-password-file=/tmp/secrets/password.txt
 
   prysm_validator:
-    image: prysmaticlabs/prysm-validator:v4.0.3
+    image: prysmaticlabs/prysm-validator:$PRYSM_BEACON_VERSION
     container_name: prysm_validator
     depends_on:
       prysm_beacon:
@@ -96,7 +94,7 @@ services:
       prysm_validator_import:
         condition: service_completed_successfully
     volumes:
-      - $KEYSTORES_VOLUME:/keystore
+      - $KEYSTORE_VOLUME:/keystore
       - $VALIDATOR_DATA_VOLUME:/validator_data
       - $CONFIGS_VOLUME:/configs
       - $TMP_VOLUME:/tmp/secrets
@@ -106,7 +104,7 @@ services:
     command: >
       --accept-terms-of-use
       --datadir /validator_data
-      --wallet-dir /keystore/prysm
+      --wallet-dir /validator_data/wallet
       --wallet-password-file /tmp/secrets/password.txt
       --chain-config-file /configs/config.yaml
       --monitoring-host 0.0.0.0

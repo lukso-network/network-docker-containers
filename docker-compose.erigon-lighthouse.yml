@@ -23,8 +23,7 @@ services:
     stop_grace_period: 2m
     command: >
       --datadir=/execution_data
-      --networkid=$LUKSO_MAINNET_NETWORK_ID
-      --externalcl
+      --networkid=$LUKSO_NETWORK_ID
       --miner.gaslimit=42000000
       --authrpc.jwtsecret=/configs/jwt.hex
       --snapshots=0
@@ -40,15 +39,83 @@ services:
       --metrics
       --metrics.addr="0.0.0.0"
       --ethstats="${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
-    # ports:
-    #   - "30303:30303" # eth/66 peering
-    #   - "30304:30304" # eth/67 peering
-    #   - "9090:9090" # gRPC Connections
-    #   - "42069:42069" # Snap sync (Bittorrent)
-    #   - "6060:6060" # Metrics or Pprof
-    #   - "8551:8551" # Engine API (JWT auth)
     network_mode: host
     logging:
       driver: "local"
       options:
         max-size: "100m"
+
+  lighthouse:
+    image: sigp/lighthouse:$LIGHTHOUSE_VERSION
+    container_name: lighthouse
+    restart: unless-stopped
+    depends_on:
+      - erigon
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    command:
+      - lighthouse
+      - --testnet-dir=/configs
+      - bn
+      - --datadir=/consensus_data
+      - --listen-address=0.0.0.0
+      - --eth1
+      - --http
+      - --http-address=0.0.0.0
+      - --http-port=4000
+      - --enr-udp-port=9000
+      - --enr-tcp-port=9000
+      - --discovery-port=9000
+      - --enable-private-discovery
+      - --enr-address=$EXTERNAL_IP
+      - --execution-jwt=/configs/jwt.hex
+      - --execution-endpoint=http://localhost:8551
+      - --metrics
+      - --metrics-address=0.0.0.0
+      - --metrics-allow-origin=*
+      - --metrics-port=5054
+      - --suggested-fee-recipient=$FEE_RECIPIENT
+      - --boot-nodes=$CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2
+      - --slots-per-restore-point=32
+    network_mode: host
+
+  lighthouse-validator-import:
+    image: sigp/lighthouse:$LIGHTHOUSE_VERSION
+    container_name: lighthouse-validator-import
+    volumes:
+      - $KEYSTORE_VOLUME:/keystore
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $TMP_VOLUME:/tmp/secrets
+    command: >
+      lighthouse am validator import
+      --datadir=/validator_data
+      --directory=/keystore
+      --password-file=/tmp/secrets/password.txt
+      --reuse-password
+
+  lighthouse-validator:
+    image: sigp/lighthouse:$LIGHTHOUSE_VERSION
+    container_name: lighthouse-validator
+    depends_on:
+      lighthouse:
+        condition: service_started
+      lighthouse-validator-import:
+        condition: service_completed_successfully
+    volumes:
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      lighthouse vc
+      --testnet-dir=/configs
+      --validators-dir=/validator_data/validators
+      --beacon-nodes=http://127.0.0.1:4000
+      --init-slashing-protection
+      --http
+      --http-port=5062
+      --metrics
+      --metrics-port=5057
+    network_mode: host

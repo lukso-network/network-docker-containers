@@ -11,11 +11,6 @@ It is provided "as is" and you are encouraged to adjust the configuration files 
 - `genesis.ssz`
 - `genesis.json`
 
-**⚠️ Important:** for mainnet launch, you have to select the genesis files with the initial supply you want to have (cf. step 6 below):
-
-- `genesis_32.ssz`, `genesis_42.ssz` or `genesis_100.ssz`
-- `genesis_32.json`, `genesis_42.json` or `genesis_100.json`
-
 They can be found in our [`lukso-network/network-configs`](https://github.com/lukso-network/network-configs) repo.
 
 For more information, check the [LUKSO Docs](https://docs.lukso.tech/networks/mainnet/running-a-node/).
@@ -39,12 +34,10 @@ cd network-docker-containers
 
 ```
 mkdir configs
-wget -O ./configs/genesis.ssz https://raw.githubusercontent.com/lukso-network/network-configs/main/mainnet/shared/genesis_42.ssz
-wget -O ./configs/genesis.json https://raw.githubusercontent.com/lukso-network/network-configs/main/mainnet/shared/genesis_42.json
+wget -O ./configs/genesis.ssz https://raw.githubusercontent.com/lukso-network/network-configs/main/mainnet/shared/genesis.ssz
+wget -O ./configs/genesis.json https://raw.githubusercontent.com/lukso-network/network-configs/main/mainnet/shared/genesis.json
 wget -O ./configs/config.yaml https://raw.githubusercontent.com/lukso-network/network-configs/main/mainnet/shared/config.yaml
 ```
-
-⚠️ NOTE: The example above is for the 42M LYX supply. If you want to use another supply, replace 42 with 35 or 100 in the commands above.
 
 5. **IMPORTANT:** Create `.env` file and adjust the values in `.env` file (node name, fee recipient address, etc.).
 
@@ -84,9 +77,9 @@ Check the status of the containers:
 docker ps
 
 # CONTAINER ID   IMAGE                                       COMMAND                  CREATED              STATUS                         PORTS                    NAMES
-# 1ffeefcbcfb4   prysmaticlabs/prysm-validator:v4.0.3        "/app/cmd/validator/…"   About a minute ago   Up About a minute                                       prysm_validator
-# 1dff26d8026a   prysmaticlabs/prysm-beacon-chain:v4.0.3     "/app/cmd/beacon-cha…"   About a minute ago   Up About a minute                                       prysm_beacon
-# b3e2c814ddb5   ethereum/client-go:v1.11.6                  "geth --config /conf…"   About a minute ago   Up About a minute                                       geth
+# 1ffeefcbcfb4   prysmaticlabs/prysm-validator:v4.0.8        "/app/cmd/validator/…"   About a minute ago   Up About a minute                                       prysm_validator
+# 1dff26d8026a   prysmaticlabs/prysm-beacon-chain:v4.0.8     "/app/cmd/beacon-cha…"   About a minute ago   Up About a minute                                       prysm_beacon
+# b3e2c814ddb5   ethereum/client-go:v1.13.1                  "geth --config /conf…"   About a minute ago   Up About a minute                                       geth
 ```
 
 Check the logs to make sure everything is running fine:
