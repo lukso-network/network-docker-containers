@@ -24,7 +24,7 @@ services:
       --bootnodes="$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2"
       --metrics-enabled
       --metrics-host="0.0.0.0"
-#      --ethstats="${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
+      --ethstats="${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
 
     network_mode: host
     logging:
@@ -65,7 +65,6 @@ services:
       - --suggested-fee-recipient=$FEE_RECIPIENT
       - --boot-nodes=$CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2
       - --slots-per-restore-point=32
-      - --checkpoint-sync-url=https://checkpoints.testnet.lukso.network
     network_mode: host
 
   lighthouse-validator-import:
