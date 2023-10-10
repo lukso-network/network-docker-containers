@@ -64,6 +64,7 @@ services:
       --block-batch-limit 512
       --block-batch-limit-burst-factor 10
       --p2p-host-ip $EXTERNAL_IP
+      --checkpoint-sync-url=$CHECKPOINT_SYNC_URL
     network_mode: host
     logging:
       driver: "local"
