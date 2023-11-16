@@ -65,6 +65,7 @@ services:
       - --suggested-fee-recipient=$FEE_RECIPIENT
       - --boot-nodes=$CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2
       - --slots-per-restore-point=32
+      - --checkpoint-sync-url=$CHECKPOINT_SYNC_URL
     network_mode: host
 
   lighthouse-validator-import:
