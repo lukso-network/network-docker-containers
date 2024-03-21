@@ -58,6 +58,8 @@ services:
     command: >
       --initial-state /configs/genesis.ssz
       --network /configs/config.yaml
+      --checkpoint-sync-url $CHECKPOINT_SYNC_URL
+      --ignore-weak-subjectivity-period-enabled
       --data-path /consensus_data
       --p2p-discovery-bootnodes $CONSENSUS_BOOTSTRAP_NODE_1
       --ee-endpoint http://localhost:8551
