@@ -22,6 +22,7 @@ services:
     stop_grace_period: 2m
     command: >
       --datadir=/execution_data
+      --db.size.limit=8TB
       --networkid=$LUKSO_NETWORK_ID
       --externalcl
       --miner.gaslimit=42000000
