@@ -39,6 +39,7 @@ services:
       --bootnodes="$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2"
       --metrics
       --metrics.addr="0.0.0.0"
+      --ethstats="${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
     network_mode: host
     logging:
       driver: "local"
