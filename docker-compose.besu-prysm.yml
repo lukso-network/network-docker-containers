@@ -13,6 +13,7 @@ services:
     command: >
       --data-path=/execution_data
       --genesis-file=/configs/genesis.json
+       --min-gas-price=1000000000
       --network-id=$LUKSO_NETWORK_ID
       --engine-jwt-secret=/configs/jwt.hex
       --nat-method=DOCKER
