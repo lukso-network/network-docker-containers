@@ -35,7 +35,7 @@ services:
       --ipcdisable
       --authrpc.jwtsecret /configs/jwt.hex
       --bootnodes $EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2
-      --networkid $LUKSO_MAINNET_NETWORK_ID
+      --networkid $LUKSO_NETWORK_ID
       --verbosity $GETH_VERBOSITY
       --metrics
       --metrics.expensive
