@@ -42,7 +42,7 @@ wget -O ./configs/config.yaml https://raw.githubusercontent.com/lukso-network/ne
 5. **IMPORTANT:** Create `.env` file and adjust the values in `.env` file (node name, fee recipient address, etc.).
 
 ```
-cp .env.example .env
+cp .env.mainnet .env
 ```
 
 6. Copy your `keystore-xxx.json` files in the [`./keystores/`](./keystores) folder.
