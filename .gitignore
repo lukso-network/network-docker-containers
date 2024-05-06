@@ -1,7 +1,11 @@
 configs
 data
+keystore
+tmp
 
 .env
 
 keystores/*
 !keystores/README.md
+
+.idea

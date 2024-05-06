@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  besu:
+    image: hyperledger/besu:$BESU_VERSION
+    container_name: besu
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --data-path=/execution_data
+      --genesis-file=/configs/genesis.json
+      --network-id=$LUKSO_NETWORK_ID
+      --engine-jwt-secret=/configs/jwt.hex
+      --nat-method=DOCKER
+      --p2p-host="$EXTERNAL_IP"
+      --rpc-http-enabled
+      --rpc-http-host="0.0.0.0"
+      --rpc-http-apis="ETH,NET"
+      --rpc-http-cors-origins="*"
+      --bootnodes="$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2"
+      --metrics-enabled
+      --metrics-host="0.0.0.0"
+      --ethstats="${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
+    
+    network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
