@@ -34,7 +34,6 @@ services:
       --http.vhosts "*"
       --ipcdisable
       --authrpc.jwtsecret /configs/jwt.hex
-      --datadir=/execution_data
       --bootnodes $EXECUTION_BOOTSTRAP_NODE_1
       --networkid $LUKSO_MAINNET_NETWORK_ID
       --verbosity $GETH_VERBOSITY
