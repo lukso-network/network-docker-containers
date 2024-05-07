@@ -66,17 +66,15 @@ services:
       --execution-endpoint=http://localhost:8551
       --jwt-secret=/configs/jwt.hex
       --suggested-fee-recipient $FEE_RECIPIENT
-      --min-sync-peers=0
+      --min-sync-peers=1
       --monitoring-host 0.0.0.0
       --grpc-gateway-host 0.0.0.0
       --rpc-host 0.0.0.0
       --verbosity $PRYSM_VERBOSITY
       --p2p-max-peers 250
       --subscribe-all-subnets
-      --minimum-peers-per-subnet 0
+      --minimum-peers-per-subnet 1
       --contract-deployment-block 0
-      --block-batch-limit 512
-      --block-batch-limit-burst-factor 10
       --p2p-host-ip $EXTERNAL_IP
       --checkpoint-sync-url=$CHECKPOINT_SYNC_URL
     network_mode: host

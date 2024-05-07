@@ -81,8 +81,6 @@ services:
       --subscribe-all-subnets
       --minimum-peers-per-subnet 1
       --contract-deployment-block 0
-      --block-batch-limit 512
-      --block-batch-limit-burst-factor 10
       --p2p-host-ip $EXTERNAL_IP
      # Add your custom flags here.
      # Docs: https://docs.prylabs.network/docs/prysm-usage/parameters#beacon-node-flags
