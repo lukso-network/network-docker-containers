@@ -77,9 +77,9 @@ Check the status of the containers:
 docker ps
 
 # CONTAINER ID   IMAGE                                       COMMAND                  CREATED              STATUS                         PORTS                    NAMES
-# 1ffeefcbcfb4   prysmaticlabs/prysm-validator:v4.0.8        "/app/cmd/validator/…"   About a minute ago   Up About a minute                                       prysm_validator
-# 1dff26d8026a   prysmaticlabs/prysm-beacon-chain:v4.0.8     "/app/cmd/beacon-cha…"   About a minute ago   Up About a minute                                       prysm_beacon
-# b3e2c814ddb5   ethereum/client-go:v1.13.1                  "geth --config /conf…"   About a minute ago   Up About a minute                                       geth
+# 1ffeefcbcfb4   prysmaticlabs/prysm-validator:v4.2.1        "/app/cmd/validator/…"   About a minute ago   Up About a minute                                       prysm_validator
+# 1dff26d8026a   prysmaticlabs/prysm-beacon-chain:v4.2.1     "/app/cmd/beacon-cha…"   About a minute ago   Up About a minute                                       prysm_beacon
+# b3e2c814ddb5   ethereum/client-go:v1.13.15                  "geth --config /conf…"   About a minute ago   Up About a minute                                       geth
 ```
 
 Check the logs to make sure everything is running fine:
