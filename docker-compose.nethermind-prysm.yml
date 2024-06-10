@@ -13,6 +13,7 @@ services:
       --datadir=/execution_data
       --baseDbPath=/execution_data
       
+      --Init.ChainSpecPath=/configs/chainspec.json
       --EthStats.Enabled=true
       --EthStats.Name=${NODE_NAME}
       --EthStats.Secret=${ETH_STATS_SECRET}
@@ -31,7 +32,7 @@ services:
     image: prysmaticlabs/prysm-beacon-chain:$PRYSM_BEACON_VERSION
     container_name: prysm_beacon
     depends_on:
-      - erigon
+      - nethermind
     volumes:
       - $CONSENSUS_DATA_VOLUME:/consensus_data
       - $CONFIGS_VOLUME:/configs
@@ -66,49 +67,3 @@ services:
       options:
         max-size: "100m"
 
-  prysm_validator_import:
-    image: prysmaticlabs/prysm-validator:$PRYSM_BEACON_VERSION
-    container_name: prysm_validator_import
-    volumes:
-      - $KEYSTORE_VOLUME:/keystore
-      - $VALIDATOR_DATA_VOLUME:/validator_data
-      - $TMP_VOLUME:/tmp/secrets
-    command: >
-      accounts import
-      --accept-terms-of-use
-      --keys-dir=/keystore
-      --wallet-dir=/validator_data/wallet
-      --wallet-password-file=/tmp/secrets/password.txt
-      --account-password-file=/tmp/secrets/password.txt
-
-  prysm_validator:
-    image: prysmaticlabs/prysm-validator:$PRYSM_BEACON_VERSION
-    container_name: prysm_validator
-    depends_on:
-      prysm_beacon:
-        condition: service_started
-      prysm_validator_import:
-        condition: service_completed_successfully
-    volumes:
-      - $KEYSTORE_VOLUME:/keystore
-      - $VALIDATOR_DATA_VOLUME:/validator_data
-      - $CONFIGS_VOLUME:/configs
-      - $TMP_VOLUME:/tmp/secrets
-    restart: unless-stopped
-    stop_signal: SIGINT
-    stop_grace_period: 2m
-    command: >
-      --accept-terms-of-use
-      --datadir /validator_data
-      --wallet-dir /validator_data/wallet
-      --wallet-password-file /tmp/secrets/password.txt
-      --chain-config-file /configs/config.yaml
-      --monitoring-host 0.0.0.0
-      --grpc-gateway-host 0.0.0.0
-      --rpc-host 0.0.0.0
-      --suggested-fee-recipient $FEE_RECIPIENT
-    network_mode: host
-    logging:
-      driver: "local"
-      options:
-        max-size: "100m"
