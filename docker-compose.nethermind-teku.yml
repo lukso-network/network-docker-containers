@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  nethermind:
+    image: nethermind:$NETHERMIND_VERSION
+    container_name: nethermind
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    network_mode: host
+    command: >
+      --Init.ChainSpecPath=/configs/chainspec.json
+      --Init.GenesisHash=$GENESIS_HASH
+      --Init.BaseDbPath=/execution_data
+      --Sync.SnapSync=true
+      --JsonRpc.Host=localhost
+      --JsonRpc.Port=8551
+      --JsonRpc.Enabled=true
+      --JsonRpc.EnabledModules=["eth","web3","net","engine"]
+      --JsonRpc.JwtSecretFile=/configs/jwt.hex
+      --Discovery.Bootnodes=$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2
+      --Merge.Enabled=true
+      --KeyStore.KeyStoreDirectory=/execution_data/keystore
+      --Network.MaxActivePeers=25
+    
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
+
+  teku:
+    image: consensys/teku:$TEKU_VERSION
+    container_name: teku
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --initial-state /configs/genesis.ssz
+      --network /configs/config.yaml
+      --checkpoint-sync-url $CHECKPOINT_SYNC_URL
+      --ignore-weak-subjectivity-period-enabled
+      --data-path /consensus_data
+      --p2p-discovery-bootnodes $CONSENSUS_BOOTSTRAP_NODE_1
+      --ee-endpoint http://localhost:8551
+      --ee-jwt-secret-file /configs/jwt.hex
+      --validators-proposer-default-fee-recipient $FEE_RECIPIENT
+      --p2p-interface 0.0.0.0
+      --p2p-port 9000
+      --p2p-peer-lower-bound 0
+      --p2p-peer-upper-bound 250
+      --p2p-subscribe-all-subnets-enabled
+      --metrics-enabled
+      --metrics-interface 0.0.0.0
+      --rest-api-enabled
+      --rest-api-host-allowlist=*
+      --rest-api-interface 0.0.0.0
+      --rest-api-cors-origins=*
+    network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"

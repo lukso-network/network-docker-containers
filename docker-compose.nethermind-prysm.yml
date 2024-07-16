@@ -1,0 +1,118 @@
+version: "3.8"
+
+services:
+  nethermind:
+    image: nethermind:$NETHERMIND_VERSION
+    container_name: nethermind
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --Init.ChainSpecPath=/configs/chainspec.json
+      --Init.GenesisHash=$GENESIS_HASH
+      --Init.BaseDbPath=/execution_data
+      --Sync.SnapSync=true
+      --JsonRpc.Host=localhost
+      --JsonRpc.Port=8551
+      --JsonRpc.Enabled=true
+      --JsonRpc.EnabledModules=["eth","web3","net","engine"]
+      --JsonRpc.JwtSecretFile=/configs/jwt.hex
+      --Discovery.Bootnodes=$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2
+      --Merge.Enabled=true
+      --KeyStore.KeyStoreDirectory=/execution_data/keystore
+      --Network.MaxActivePeers=25
+
+    network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
+
+  prysm_beacon:
+    image: prysmaticlabs/prysm-beacon-chain:$PRYSM_BEACON_VERSION
+    container_name: prysm_beacon
+    depends_on:
+      - nethermind
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --accept-terms-of-use
+      --genesis-state=/configs/genesis.ssz
+      --chain-config-file=/configs/config.yaml
+      --datadir=/consensus_data
+      --bootstrap-node $CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2
+      --execution-endpoint=http://localhost:8551
+      --jwt-secret=/configs/jwt.hex
+      --suggested-fee-recipient $FEE_RECIPIENT
+      --min-sync-peers=0
+      --monitoring-host 0.0.0.0
+      --grpc-gateway-host 0.0.0.0
+      --rpc-host 0.0.0.0
+      --verbosity $PRYSM_VERBOSITY
+      --p2p-max-peers 250
+      --subscribe-all-subnets
+      --minimum-peers-per-subnet 0
+      --contract-deployment-block 0
+      --block-batch-limit 512
+      --block-batch-limit-burst-factor 10
+      --p2p-host-ip $EXTERNAL_IP
+      --checkpoint-sync-url=$CHECKPOINT_SYNC_URL
+    network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
+
+  prysm_validator_import:
+    image: prysmaticlabs/prysm-validator:$PRYSM_BEACON_VERSION
+    container_name: prysm_validator_import
+    volumes:
+      - $KEYSTORE_VOLUME:/keystore
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $TMP_VOLUME:/tmp/secrets
+    command: >
+      accounts import
+      --accept-terms-of-use
+      --keys-dir=/keystore
+      --wallet-dir=/validator_data/wallet
+      --wallet-password-file=/tmp/secrets/password.txt
+      --account-password-file=/tmp/secrets/password.txt
+
+  prysm_validator:
+    image: prysmaticlabs/prysm-validator:$PRYSM_BEACON_VERSION
+    container_name: prysm_validator
+    depends_on:
+      prysm_beacon:
+        condition: service_started
+      prysm_validator_import:
+        condition: service_completed_successfully
+    volumes:
+      - $KEYSTORE_VOLUME:/keystore
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $CONFIGS_VOLUME:/configs
+      - $TMP_VOLUME:/tmp/secrets
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --accept-terms-of-use
+      --datadir /validator_data
+      --wallet-dir /validator_data/wallet
+      --wallet-password-file /tmp/secrets/password.txt
+      --chain-config-file /configs/config.yaml
+      --monitoring-host 0.0.0.0
+      --grpc-gateway-host 0.0.0.0
+      --rpc-host 0.0.0.0
+      --suggested-fee-recipient $FEE_RECIPIENT
+    network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
