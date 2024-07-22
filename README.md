@@ -112,7 +112,12 @@ ETH_STATS_SECRET=xxx
 This repo is using the following docker images:
 
 - Geth: [ethereum/client-go](https://hub.docker.com/r/ethereum/client-go)
+- Erigon: [thorax/erigon](https://hub.docker.com/r/thorax/erigon)
+- Nethermind: [nethermind/nethermind](https://hub.docker.com/r/nethermind/nethermind)
+- Besu: [hyperledger/besu](https://hub.docker.com/r/hyperledger/besu)
 - Prysm: [prysmaticlabs/prysm-beacon-chain](https://hub.docker.com/r/prysmaticlabs/prysm-beacon-chain)
+- Lighthouse: [sigp/lighthouse](https://hub.docker.com/r/sigp/lighthouse)
+- Teku: [consensys/teku](https://hub.docker.com/r/consensys/teku)
 - Prysm validator: [prysmaticlabs/prysm-validator](https://hub.docker.com/r/prysmaticlabs/prysm-validator)
 - [macht/eth2stats-client](https://hub.docker.com/r/macht/eth2stats-client)
 
