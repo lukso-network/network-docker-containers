@@ -11,6 +11,7 @@ services:
     stop_signal: SIGINT
     stop_grace_period: 2m
     command: >
+      --config=none.cfg
       --Init.ChainSpecPath=/configs/chainspec.json
       --Init.GenesisHash=$GENESIS_HASH
       --Init.BaseDbPath=/execution_data

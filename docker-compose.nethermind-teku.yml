@@ -12,6 +12,7 @@ services:
     stop_grace_period: 2m
     network_mode: host
     command: >
+      --config=none.cfg
       --Init.ChainSpecPath=/configs/chainspec.json
       --Init.GenesisHash=$GENESIS_HASH
       --Init.BaseDbPath=/execution_data
