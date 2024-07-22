@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   nethermind:
-    image: nethermind:$NETHERMIND_VERSION
+    image: nethermind/nethermind:$NETHERMIND_VERSION
     container_name: nethermind
     volumes:
       - $EXECUTION_DATA_VOLUME:/execution_data

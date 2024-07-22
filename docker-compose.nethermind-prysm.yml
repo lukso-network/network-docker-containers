@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   nethermind:
-    image: nethermind:$NETHERMIND_VERSION
+    image: nethermind/nethermind:$NETHERMIND_VERSION
     container_name: nethermind
     volumes:
       - $EXECUTION_DATA_VOLUME:/execution_data
@@ -11,12 +11,14 @@ services:
     stop_signal: SIGINT
     stop_grace_period: 2m
     command: >
+      --config=none.cfg
       --Init.ChainSpecPath=/configs/chainspec.json
       --Init.GenesisHash=$GENESIS_HASH
       --Init.BaseDbPath=/execution_data
       --Sync.SnapSync=true
       --JsonRpc.Host=localhost
-      --JsonRpc.Port=8551
+      --JsonRpc.Port=8545
+      --JsonRpc.EnginePort=8551
       --JsonRpc.Enabled=true
       --JsonRpc.EnabledModules=["eth","web3","net","engine"]
       --JsonRpc.JwtSecretFile=/configs/jwt.hex
