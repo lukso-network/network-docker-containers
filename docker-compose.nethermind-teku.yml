@@ -25,7 +25,7 @@ services:
       --Discovery.Bootnodes=$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2
       --Merge.Enabled=true
       --KeyStore.KeyStoreDirectory=/execution_data/keystore
-      --Network.MaxActivePeers=25
+      --Network.MaxActivePeers=50
     
     logging:
       driver: "local"
