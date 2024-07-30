@@ -31,7 +31,8 @@ services:
       --http.api "eth,net"
       --http.addr "0.0.0.0"
       --http.corsdomain "*"
-      --http.vhosts "*"
+      --http.vhosts 
+      --maxpeers 50
       --ipcdisable
       --authrpc.jwtsecret /configs/jwt.hex
       --bootnodes $EXECUTION_BOOTSTRAP_NODE_1
@@ -70,6 +71,7 @@ services:
       - --http-port=4000
       - --enr-udp-port=9000
       - --enr-tcp-port=9000
+      - --target-peers=100
       - --discovery-port=9000
       - --enable-private-discovery
       - --enr-address=$EXTERNAL_IP

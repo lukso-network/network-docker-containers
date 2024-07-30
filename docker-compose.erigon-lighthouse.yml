@@ -33,6 +33,7 @@ services:
       --http.addr="0.0.0.0"
       --http.api="erigon,engine"
       --http.vhosts="*"
+      --maxpeers 100
       --authrpc.addr="0.0.0.0"
       --authrpc.port=8551
       --authrpc.vhosts="*"
@@ -67,6 +68,7 @@ services:
       - --http-port=4000
       - --enr-udp-port=9000
       - --enr-tcp-port=9000
+      - --target-peers=100
       - --discovery-port=9000
       - --enable-private-discovery
       - --enr-address=$EXTERNAL_IP

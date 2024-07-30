@@ -18,6 +18,7 @@ services:
       --engine-jwt-secret=/configs/jwt.hex
       --nat-method=DOCKER
       --p2p-host="$EXTERNAL_IP"
+      --max-peers=25
       --rpc-http-enabled
       --rpc-http-host="0.0.0.0"
       --rpc-http-apis="ETH,NET"
@@ -55,7 +56,7 @@ services:
       --p2p-interface 0.0.0.0
       --p2p-port 9000
       --p2p-peer-lower-bound 0
-      --p2p-peer-upper-bound 250
+      --p2p-peer-upper-bound 100
       --p2p-subscribe-all-subnets-enabled
       --metrics-enabled
       --metrics-interface 0.0.0.0

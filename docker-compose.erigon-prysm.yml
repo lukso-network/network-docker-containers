@@ -33,6 +33,7 @@ services:
       --http.addr="0.0.0.0"
       --http.api="erigon,engine"
       --http.vhosts="*"
+      --maxpeers 100
       --authrpc.addr="0.0.0.0"
       --authrpc.port=8551
       --authrpc.vhosts="*"
@@ -71,7 +72,7 @@ services:
       --grpc-gateway-host 0.0.0.0
       --rpc-host 0.0.0.0
       --verbosity $PRYSM_VERBOSITY
-      --p2p-max-peers 250
+      --p2p-max-peers 70
       --subscribe-all-subnets
       --minimum-peers-per-subnet 0
       --contract-deployment-block 0
