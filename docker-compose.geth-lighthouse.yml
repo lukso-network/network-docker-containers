@@ -31,7 +31,7 @@ services:
       --http.api "eth,net"
       --http.addr "0.0.0.0"
       --http.corsdomain "*"
-      --http.vhosts 
+      --http.vhosts "*"
       --maxpeers 50
       --ipcdisable
       --authrpc.jwtsecret /configs/jwt.hex
