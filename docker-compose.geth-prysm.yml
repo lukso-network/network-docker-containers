@@ -85,6 +85,8 @@ services:
       --block-batch-limit 512
       --block-batch-limit-burst-factor 10
       --p2p-host-ip $EXTERNAL_IP
+      --checkpoint-sync-url=$CHECKPOINT_SYNC_URL
+      --genesis-beacon-api-url=$CHECKPOINT_SYNC_URL
      # Add your custom flags here.
      # Docs: https://docs.prylabs.network/docs/prysm-usage/parameters#beacon-node-flags
     network_mode: host
