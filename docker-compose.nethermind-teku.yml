@@ -1,34 +1,32 @@
 version: "3.8"
 
 services:
-  besu:
-    image: hyperledger/besu:$BESU_VERSION
-    container_name: besu
+  nethermind:
+    image: nethermind/nethermind:$NETHERMIND_VERSION
+    container_name: nethermind
     volumes:
       - $EXECUTION_DATA_VOLUME:/execution_data
       - $CONFIGS_VOLUME:/configs
     restart: unless-stopped
     stop_signal: SIGINT
     stop_grace_period: 2m
-    command: >
-      --data-path=/execution_data
-      --genesis-file=/configs/genesis.json
-      --min-gas-price=1000000000
-      --network-id=$LUKSO_NETWORK_ID
-      --engine-jwt-secret=/configs/jwt.hex
-      --nat-method=DOCKER
-      --p2p-host="$EXTERNAL_IP"
-      --max-peers=25
-      --rpc-http-enabled
-      --rpc-http-host="0.0.0.0"
-      --rpc-http-apis="ETH,NET"
-      --rpc-http-cors-origins="*"
-      --bootnodes="$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2"
-      --metrics-enabled
-      --metrics-host="0.0.0.0"
-      --ethstats="${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
-
     network_mode: host
+    command: >
+      --config=none.cfg
+      --Init.ChainSpecPath=/configs/chainspec.json
+      --Init.GenesisHash=$GENESIS_HASH
+      --Init.BaseDbPath=/execution_data
+      --Sync.SnapSync=true
+      --JsonRpc.Host=localhost
+      --JsonRpc.Port=8551
+      --JsonRpc.Enabled=true
+      --JsonRpc.EnabledModules=["eth","web3","net","engine"]
+      --JsonRpc.JwtSecretFile=/configs/jwt.hex
+      --Discovery.Bootnodes=$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2
+      --Merge.Enabled=true
+      --KeyStore.KeyStoreDirectory=/execution_data/keystore
+      --Network.MaxActivePeers=50
+    
     logging:
       driver: "local"
       options:

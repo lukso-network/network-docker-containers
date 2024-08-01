@@ -33,6 +33,7 @@ services:
       --http.addr="0.0.0.0"
       --http.api="erigon,engine"
       --http.vhosts="*"
+      --maxpeers 100
       --authrpc.addr="0.0.0.0"
       --authrpc.port=8551
       --authrpc.vhosts="*"
@@ -68,7 +69,7 @@ services:
       --p2p-interface 0.0.0.0
       --p2p-port 9000
       --p2p-peer-lower-bound 0
-      --p2p-peer-upper-bound 250
+      --p2p-peer-upper-bound 100
       --p2p-subscribe-all-subnets-enabled
       --metrics-enabled
       --metrics-interface 0.0.0.0

@@ -32,6 +32,7 @@ services:
       --http.addr "0.0.0.0"
       --http.corsdomain "*"
       --http.vhosts "*"
+      --maxpeers 50
       --ipcdisable
       --authrpc.jwtsecret /configs/jwt.hex
       --bootnodes $EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2
@@ -77,13 +78,13 @@ services:
       --grpc-gateway-host 0.0.0.0
       --rpc-host 0.0.0.0
       --verbosity $PRYSM_VERBOSITY
-      --p2p-max-peers 250
+      --p2p-max-peers 70
       --subscribe-all-subnets
       --minimum-peers-per-subnet 1
       --contract-deployment-block 0
-      --block-batch-limit 512
-      --block-batch-limit-burst-factor 10
       --p2p-host-ip $EXTERNAL_IP
+      --checkpoint-sync-url=$CHECKPOINT_SYNC_URL
+      --genesis-beacon-api-url=$CHECKPOINT_SYNC_URL
      # Add your custom flags here.
      # Docs: https://docs.prylabs.network/docs/prysm-usage/parameters#beacon-node-flags
     network_mode: host
