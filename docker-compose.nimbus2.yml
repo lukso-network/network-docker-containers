@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  nimbus2_checkpoint:
+    image: statusim/nimbus-eth2:multiarch-v24.10.0
+    container_name: nimbus2_checkpoint
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      trustedNodeSync
+      --network=/configs
+      --data-dir=/consensus_data
+      --trusted-node-url=$CHECKPOINT_SYNC_URL
+
+  nimbus2:
+    image: statusim/nimbus-eth2:multiarch-v24.10.0
+    container_name: nimbus2
+    depends_on:
+      nimbus2_checkpoint:
+        condition: service_completed_successfully
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    network_mode: host
+    command: >
+      --network=/configs
+      --data-dir=/consensus_data
+      --bootstrap-node='$CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2'
+      --genesis-state=/configs/genesis.ssz
+      --doppelganger-detection
+      --no-el
+      --rest
+      --rest-address='127.0.0.1'
+      --rest-port=5052
+    
+
