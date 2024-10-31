@@ -31,8 +31,9 @@ services:
     command: >
       --network=/configs
       --data-dir=/consensus_data
-      --bootstrap-node='$CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2'
+      --bootstrap-file=/configs/bootnodes.txt
       --genesis-state=/configs/genesis.ssz
+      --nat=extip:83.144.95.19
       --no-el
       --rest
       --rest-address='127.0.0.1'
