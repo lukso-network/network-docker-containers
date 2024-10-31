@@ -33,7 +33,6 @@ services:
       --data-dir=/consensus_data
       --bootstrap-node='$CONSENSUS_BOOTSTRAP_NODE_1,$CONSENSUS_BOOTSTRAP_NODE_2'
       --genesis-state=/configs/genesis.ssz
-      --doppelganger-detection
       --no-el
       --rest
       --rest-address='127.0.0.1'
