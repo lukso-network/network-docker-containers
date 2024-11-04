@@ -33,10 +33,45 @@ services:
       --data-dir=/consensus_data
       --bootstrap-file=/configs/bootnodes.txt
       --genesis-state=/configs/genesis.ssz
-      --nat=extip:83.144.95.19
-      --no-el
+      --nat=extip:$EXTERNAL_IP
       --rest
       --rest-address='127.0.0.1'
       --rest-port=5052
-    
+  
+  nimbus2_validator_import:
+    image: statusim/nimbus-eth2:multiarch-v24.10.0
+    container_name: nimbus2_validator_import
+    volumes:
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $KEYSTORE_VOLUME:/keystore
+      - $CONFIGS_VOLUME:/configs
+    command: >
+      deposits
+      import
+      --data-dir=/validator_data/wallet
+      --network=/configs
+      /keystore
+
+  nimbus_validator:
+    image: statusim/nimbus-eth2:multiarch-v24.10.0
+    container_name: nimbus2_validator
+    depends_on:
+      nimbus2_validator_import:
+        condition: service_completed_successfully
+      nimbus2:
+        condition: service_started
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    network_mode: host
+    command: >
+      nimbus_validator_client
+      --data-dir=/validator_data
+      --validators-dir=/validator_data/wallet/validators
+      --secrets-dir=/validator_data/wallet/secrets
+      --beacon-node=['127.0.0.1:5052']
+
 
