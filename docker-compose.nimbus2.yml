@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   nimbus2_checkpoint:
-    image: statusim/nimbus-eth2:multiarch-v24.10.0
+    image: statusim/nimbus-eth2:multiarch-$NIMBUS2_VERSION
     container_name: nimbus2_checkpoint
     volumes:
       - $CONSENSUS_DATA_VOLUME:/consensus_data
@@ -16,7 +16,7 @@ services:
       --trusted-node-url=$CHECKPOINT_SYNC_URL
 
   nimbus2:
-    image: statusim/nimbus-eth2:multiarch-v24.10.0
+    image: statusim/nimbus-eth2:multiarch-$NIMBUS2_VERSION
     container_name: nimbus2
     depends_on:
       nimbus2_checkpoint:
@@ -37,41 +37,3 @@ services:
       --rest
       --rest-address='127.0.0.1'
       --rest-port=5052
-  
-  nimbus2_validator_import:
-    image: statusim/nimbus-eth2:multiarch-v24.10.0
-    container_name: nimbus2_validator_import
-    volumes:
-      - $VALIDATOR_DATA_VOLUME:/validator_data
-      - $KEYSTORE_VOLUME:/keystore
-      - $CONFIGS_VOLUME:/configs
-    command: >
-      deposits
-      import
-      --data-dir=/validator_data/wallet
-      --network=/configs
-      /keystore
-
-  nimbus_validator:
-    image: statusim/nimbus-eth2:multiarch-v24.10.0
-    container_name: nimbus2_validator
-    depends_on:
-      nimbus2_validator_import:
-        condition: service_completed_successfully
-      nimbus2:
-        condition: service_started
-    volumes:
-      - $CONSENSUS_DATA_VOLUME:/consensus_data
-      - $CONFIGS_VOLUME:/configs
-    restart: unless-stopped
-    stop_signal: SIGINT
-    stop_grace_period: 2m
-    network_mode: host
-    command: >
-      nimbus_validator_client
-      --data-dir=/validator_data
-      --validators-dir=/validator_data/wallet/validators
-      --secrets-dir=/validator_data/wallet/secrets
-      --beacon-node=['127.0.0.1:5052']
-
-

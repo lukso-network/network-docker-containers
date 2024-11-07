@@ -1,0 +1,111 @@
+version: "3.8"
+
+services:
+  besu:
+    image: hyperledger/besu:$BESU_VERSION
+    container_name: besu
+    volumes:
+      - $EXECUTION_DATA_VOLUME:/execution_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      --data-path=/execution_data
+      --genesis-file=/configs/genesis.json
+      --min-gas-price=1000000000
+      --network-id=$LUKSO_NETWORK_ID
+      --engine-jwt-secret=/configs/jwt.hex
+      --nat-method=DOCKER
+      --p2p-host="$EXTERNAL_IP"
+      --max-peers=25
+      --rpc-http-enabled
+      --rpc-http-host="0.0.0.0"
+      --rpc-http-apis="ETH,NET"
+      --rpc-http-cors-origins="*"
+      --bootnodes="$EXECUTION_BOOTSTRAP_NODE_1,$EXECUTION_BOOTSTRAP_NODE_2"
+      --metrics-enabled
+      --metrics-host="0.0.0.0"
+      --ethstats="${NODE_NAME}:${ETH_STATS_SECRET}@${ETH_STATS_ADDRESS}"
+    network_mode: host
+    logging:
+      driver: "local"
+      options:
+        max-size: "100m"
+
+  nimbus2_checkpoint:
+    image: statusim/nimbus-eth2:multiarch-$NIMBUS2_VERSION
+    container_name: nimbus2_checkpoint
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: >
+      trustedNodeSync
+      --network=/configs
+      --data-dir=/consensus_data
+      --trusted-node-url=$CHECKPOINT_SYNC_URL
+
+  nimbus2:
+    image: statusim/nimbus-eth2:multiarch-$NIMBUS2_VERSION
+    container_name: nimbus2
+    depends_on:
+      nimbus2_checkpoint:
+        condition: service_completed_successfully
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    network_mode: host
+    command: >
+      --network=/configs
+      --data-dir=/consensus_data
+      --bootstrap-file=/configs/bootnodes.txt
+      --genesis-state=/configs/genesis.ssz
+      --jwt-secret=/configs/jwt.hex
+      --el=['http://127.0.0.1:8551']
+      --nat=extip:$EXTERNAL_IP
+      --rest
+      --rest-address='127.0.0.1'
+      --rest-port=5052
+  
+  nimbus2_validator_import:
+    image: statusim/nimbus-eth2:multiarch-$NIMBUS2_VERSION
+    container_name: nimbus2_validator_import
+    volumes:
+      - $VALIDATOR_DATA_VOLUME:/validator_data
+      - $KEYSTORE_VOLUME:/keystore
+      - $CONFIGS_VOLUME:/configs
+    command: >
+      deposits
+      import
+      --data-dir=/validator_data/wallet
+      --network=/configs
+      /keystore
+
+  nimbus_validator:
+    image: statusim/nimbus-eth2:multiarch-$NIMBUS2_VERSION
+    container_name: nimbus2_validator
+    depends_on:
+      nimbus2_validator_import:
+        condition: service_completed_successfully
+      nimbus2:
+        condition: service_started
+    volumes:
+      - $CONSENSUS_DATA_VOLUME:/consensus_data
+      - $CONFIGS_VOLUME:/configs
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    network_mode: host
+    command: >
+      nimbus_validator_client
+      --data-dir=/validator_data
+      --validators-dir=/validator_data/wallet/validators
+      --secrets-dir=/validator_data/wallet/secrets
+      --beacon-node=['127.0.0.1:5052']
+
+
