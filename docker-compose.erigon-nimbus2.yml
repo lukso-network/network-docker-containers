@@ -86,31 +86,16 @@ services:
       --rest-address='127.0.0.1'
       --rest-port=5052
   
-  nimbus2_validator_import:
-    image: statusim/nimbus-eth2:multiarch-$NIMBUS2_VERSION
-    container_name: nimbus2_validator_import
-    volumes:
-      - $VALIDATOR_DATA_VOLUME:/validator_data
-      - $KEYSTORE_VOLUME:/keystore
-      - $CONFIGS_VOLUME:/configs
-    command: >
-      deposits
-      import
-      --data-dir=/validator_data/wallet
-      --network=/configs
-      /keystore
-
-  nimbus_validator:
-    image: statusim/nimbus-eth2:multiarch-$NIMBUS2_VERSION
+  # Note that nimbus doesn't support non-interactive keystore import,
+  # please prepare the validator_data using the nimbus_beacon_node deposits import command.
+  nimbus2_validator:
+    image: statusim/nimbus-validator-client:multiarch-$NIMBUS2_VERSION
     container_name: nimbus2_validator
     depends_on:
-      nimbus2_validator_import:
-        condition: service_completed_successfully
       nimbus2:
         condition: service_started
     volumes:
-      - $CONSENSUS_DATA_VOLUME:/consensus_data
-      - $CONFIGS_VOLUME:/configs
+      - $VALIDATOR_DATA_VOLUME:/validator_data
     restart: unless-stopped
     stop_signal: SIGINT
     stop_grace_period: 2m
@@ -121,5 +106,4 @@ services:
       --validators-dir=/validator_data/wallet/validators
       --secrets-dir=/validator_data/wallet/secrets
       --beacon-node=['127.0.0.1:5052']
-
 
