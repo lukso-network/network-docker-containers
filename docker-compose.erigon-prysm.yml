@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   init-erigon:
-    image: thorax/erigon:$ERIGON_VERSION
+    image: erigontech/erigon:$ERIGON_VERSION
     container_name: init-erigon
     volumes:
       - $EXECUTION_DATA_VOLUME:/execution_data
@@ -11,7 +11,7 @@ services:
       --datadir=/execution_data init /configs/genesis.json
 
   erigon:
-    image: thorax/erigon:$ERIGON_VERSION
+    image: erigontech/erigon:$ERIGON_VERSION
     container_name: erigon
     depends_on:
       - init-erigon
