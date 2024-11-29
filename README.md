@@ -10,6 +10,7 @@ It is provided "as is" and you are encouraged to adjust the configuration files 
 
 - `genesis.ssz`
 - `genesis.json`
+- `config.yaml`
 
 They can be found in our [`lukso-network/network-configs`](https://github.com/lukso-network/network-configs) repo.
 
