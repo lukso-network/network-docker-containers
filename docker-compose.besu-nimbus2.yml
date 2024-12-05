@@ -66,7 +66,7 @@ services:
       --bootstrap-file=/configs/bootnodes.txt
       --genesis-state=/configs/genesis.ssz
       --jwt-secret=/configs/jwt.hex
-      --el=['http://127.0.0.1:8551']
+      --el='http://127.0.0.1:8551'
       --nat=extip:$EXTERNAL_IP
       --rest
       --rest-address='127.0.0.1'
