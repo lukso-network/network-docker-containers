@@ -27,7 +27,8 @@ services:
       --networkid=$LUKSO_NETWORK_ID
       --miner.gaslimit=42000000
       --authrpc.jwtsecret=/configs/jwt.hex
-      --snapshots=0
+      --prune.mode=full
+      --no-downloader=true
       --nat="extip:$EXTERNAL_IP"
       --http
       --http.addr="0.0.0.0"
