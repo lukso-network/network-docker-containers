@@ -60,8 +60,6 @@ services:
       --rpc-host 0.0.0.0
       --verbosity $PRYSM_VERBOSITY
       --p2p-max-peers 70
-      --subscribe-all-subnets
-      --minimum-peers-per-subnet 1
       --contract-deployment-block 0
       --p2p-host-ip $EXTERNAL_IP
       --checkpoint-sync-url=$CHECKPOINT_SYNC_URL
