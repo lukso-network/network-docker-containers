@@ -55,7 +55,7 @@ services:
       --validators-proposer-default-fee-recipient $FEE_RECIPIENT
       --p2p-interface 0.0.0.0
       --p2p-port 9000
-      --p2p-peer-lower-bound 0
+      --p2p-peer-lower-bound 1
       --p2p-peer-upper-bound 100
       --metrics-enabled
       --metrics-interface 0.0.0.0
